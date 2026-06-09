@@ -1,0 +1,73 @@
+{
+  "id": "goblin",
+  "name": "Goblin",
+  "size": "small",
+  "type": "humanoid",
+  "alignment": "neutral evil",
+  "cr": "1/4",
+  "ac": {
+    "value": 15,
+    "type": "leather armor, shield"
+  },
+  "hp": {
+    "average": 7,
+    "formula": "2d6"
+  },
+  "speed": {
+    "walk": 30
+  },
+  "stats": {
+    "str": 8,
+    "dex": 14,
+    "con": 10,
+    "int": 10,
+    "wis": 8,
+    "cha": 8
+  },
+  "skills": {
+    "Stealth": 6
+  },
+  "senses": ["darkvision 60 ft.", "passive Perception 9"],
+  "languages": ["Common", "Goblin"],
+  "traits": [
+    {
+      "name": "Nimble Escape",
+      "description": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Scimitar",
+      "attackBonus": 4,
+      "reach": 5,
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "slashing"
+        }
+      ],
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target."
+    },
+    {
+      "name": "Shortbow",
+      "attackBonus": 4,
+      "range": "80/320 ft.",
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ],
+      "description": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target."
+    }
+  ],
+  "bonusActions": [
+    {
+      "name": "Nimble Escape",
+      "description": "The goblin takes the Disengage or Hide action."
+    }
+  ],
+  "source": "fixture",
+  "createdAt": "2026-06-09T00:00:00.000Z",
+  "updatedAt": "2026-06-09T00:00:00.000Z"
+}
