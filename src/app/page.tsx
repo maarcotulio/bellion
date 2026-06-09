@@ -55,6 +55,12 @@ export default function Home() {
                 Quick combat
               </Link>
             </Button>
+            <Button asChild variant="secondary">
+              <Link href="/combat">
+                <Shield aria-hidden="true" />
+                Encounters
+              </Link>
+            </Button>
           </div>
         </div>
 
