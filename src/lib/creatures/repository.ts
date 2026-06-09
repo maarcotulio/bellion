@@ -73,8 +73,8 @@ export async function updateCreature(id: string, input: Creature) {
   await connectToMongo();
 
   const document = await CreatureModel.findOneAndUpdate({ id }, input, {
-    new: true,
     projection: { _id: 0 },
+    returnDocument: "after",
     runValidators: true,
   })
     .lean()
