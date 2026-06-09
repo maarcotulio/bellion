@@ -1,4 +1,4 @@
-import { BookOpen, Dices, ScrollText, Shield } from "lucide-react";
+import { BookOpen, Dices, ScrollText, Shield, Swords } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,18 @@ export default function Home() {
                 Open library
               </Link>
             </Button>
-            <Button variant="secondary">Review foundation</Button>
+            <Button asChild variant="secondary">
+              <Link href="/dice">
+                <Dices aria-hidden="true" />
+                Dice sandbox
+              </Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/combat/quick">
+                <Swords aria-hidden="true" />
+                Quick combat
+              </Link>
+            </Button>
           </div>
         </div>
 
