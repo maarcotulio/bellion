@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.5rem;
+  --background: #080b12;
+  --foreground: #eef5ff;
+  --card: #12182a;
+  --card-foreground: #eef5ff;
+  --popover: #12182a;
+  --popover-foreground: #eef5ff;
+  --primary: #3ed0ff;
+  --primary-foreground: #061018;
+  --secondary: #1b2337;
+  --secondary-foreground: #eef5ff;
+  --muted: #192033;
+  --muted-foreground: #a9b4c7;
+  --accent: #d6a84f;
+  --accent-foreground: #141006;
+  --destructive: #dc3645;
+  --border: #26314a;
+  --input: #26314a;
+  --ring: #3ed0ff;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(62, 208, 255, 0.16), transparent 28rem),
+    linear-gradient(135deg, rgba(214, 168, 79, 0.08), transparent 34rem),
+    var(--background);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
