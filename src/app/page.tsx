@@ -1,4 +1,5 @@
 import { BookOpen, Dices, ScrollText, Shield } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
@@ -36,9 +37,11 @@ export default function Home() {
             rolls from a typed Next.js foundation.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button>
-              <ScrollText aria-hidden="true" />
-              Open dashboard
+            <Button asChild>
+              <Link href="/library">
+                <ScrollText aria-hidden="true" />
+                Open library
+              </Link>
             </Button>
             <Button variant="secondary">Review foundation</Button>
           </div>
