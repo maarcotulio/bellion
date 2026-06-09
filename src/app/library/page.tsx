@@ -144,12 +144,12 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
               ))}
             </select>
           </label>
-          <div className="flex items-end gap-2">
+          <div className="grid gap-2 sm:grid-cols-2 lg:flex lg:items-end">
             <Button type="submit" className="w-full lg:w-auto">
               <BookOpen aria-hidden="true" />
               Filter
             </Button>
-            <Button asChild variant="ghost">
+            <Button asChild variant="ghost" className="w-full lg:w-auto">
               <Link href="/library">Clear</Link>
             </Button>
           </div>
