@@ -13,7 +13,7 @@ export function SiteHeader() {
     <header className="border-b border-border/80 bg-card/40 backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4 sm:px-8">
         <Link href="/" className="font-display text-xl font-semibold tracking-wide text-foreground">
-          Bellion
+          Royal Bellion
         </Link>
         <nav className="flex flex-wrap items-center gap-1 sm:gap-2">
           {navItems.map((item) => (

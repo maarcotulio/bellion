@@ -48,12 +48,6 @@ const goblin: Creature = {
 const encounter: Encounter = {
   id: "round-test",
   name: "Round Test",
-  target: {
-    name: "Knight",
-    ac: 12,
-    currentHp: 30,
-    maxHp: 30,
-  },
   combatants: [
     {
       id: "goblin-1",
@@ -61,6 +55,7 @@ const encounter: Encounter = {
       instanceName: "Goblin #1",
       currentHp: 7,
       maxHp: 7,
+      tempHp: 0,
       conditions: [],
       isActive: true,
     },
@@ -70,6 +65,7 @@ const encounter: Encounter = {
       instanceName: "Goblin #2",
       currentHp: 7,
       maxHp: 7,
+      tempHp: 3,
       conditions: [],
       isActive: true,
     },
@@ -79,6 +75,7 @@ const encounter: Encounter = {
       instanceName: "Goblin #3",
       currentHp: 0,
       maxHp: 7,
+      tempHp: 0,
       conditions: [],
       isActive: true,
     },
@@ -89,7 +86,7 @@ const encounter: Encounter = {
 };
 
 describe("encounter round engine", () => {
-  it("runs selected active combatants in sequence, updates target HP, and logs each roll", () => {
+  it("runs selected active combatants against combatant targets and logs structured rolls", () => {
     const result = runEncounterRound({
       encounter,
       creatures: [goblin],
@@ -99,15 +96,44 @@ describe("encounter round engine", () => {
         "goblin-2": "Shortbow",
         "goblin-3": "Shortbow",
       },
+      targetByCombatantId: {
+        "goblin-1": "goblin-2",
+        "goblin-2": "goblin-1",
+        "goblin-3": "goblin-1",
+      },
       damageMode: "normal",
       random: fixedRolls([0.6, 0.5, 0.1]),
     });
 
-    expect(result.target.currentHp).toBe(24);
+    expect(result.combatants.find((combatant) => combatant.id === "goblin-2")).toMatchObject({
+      currentHp: 4,
+      tempHp: 0,
+    });
     expect(result.log).toHaveLength(2);
-    expect(result.log[0]?.text).toContain("Goblin #1");
-    expect(result.log[0]?.text).toContain("6 damage");
-    expect(result.log[1]?.text).toContain("Goblin #2");
-    expect(result.log[1]?.text).toContain("miss");
+    expect(result.log[0]).toMatchObject({
+      attackerName: "Goblin #1",
+      targetName: "Goblin #2",
+      actionName: "Shortbow",
+      outcome: "hit",
+      toHit: {
+        expression: "1d20",
+        rolls: [13],
+        modifier: 4,
+        total: 17,
+      },
+      damage: {
+        expression: "1d6+2",
+        rolls: [4],
+        modifier: 2,
+        total: 6,
+        type: "piercing",
+      },
+    });
+    expect(result.log[1]).toMatchObject({
+      attackerName: "Goblin #2",
+      targetName: "Goblin #1",
+      outcome: "miss",
+      damage: undefined,
+    });
   });
 });

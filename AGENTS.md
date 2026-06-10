@@ -1,8 +1,8 @@
-# Bellion Agent Guide
+# Royal Bellion Agent Guide
 
 ## Purpose
 
-Bellion is a Dungeon Master tool for D&D 5e creature management and monster combat. The app stores creature templates, imports JSON stat blocks, builds encounters, resolves dice rolls, updates hit points, and keeps combat output auditable.
+Royal Bellion is a Dungeon Master tool for D&D 5e creature management and monster combat. The app stores creature templates, imports JSON stat blocks, builds encounters, resolves dice rolls, updates hit points, and keeps combat output auditable.
 
 ## Stack
 
@@ -72,7 +72,7 @@ Keep route components thin. Put shared domain behavior in `src/lib/*` and reusab
 - Trait: a passive feature on a creature.
 - Dice expression: a string such as `2d6+3` parsed and resolved by the dice engine.
 - Combat log: an auditable sequence of rolls and combat outcomes.
-- Arcane Terminal: Bellion's UI direction: dark fantasy, luminous interface panels, dense DM tooling, and readable combat telemetry.
+- Arcane Terminal: Royal Bellion's UI direction: dark fantasy, luminous interface panels, dense DM tooling, and readable combat telemetry.
 
 ## Implementation Rules
 

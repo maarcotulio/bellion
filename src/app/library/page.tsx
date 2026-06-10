@@ -88,7 +88,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
               Creature Library
             </p>
             <h1 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
-              Bellion Archive
+              Royal Bellion Archive
             </h1>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -168,7 +168,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           <EmptyState
             icon={BookOpen}
             title="No creatures found"
-            description="Create a creature manually or import a Bellion JSON stat block."
+            description="Create a creature manually or import a Royal Bellion JSON stat block."
             className="mt-8"
           >
             <Button asChild>

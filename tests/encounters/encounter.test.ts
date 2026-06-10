@@ -18,12 +18,6 @@ function makeEncounter(overrides: Partial<Encounter> = {}): Encounter {
   return {
     id: encounterId,
     name: "Vitest M3 Encounter",
-    target: {
-      name: "Training Dummy",
-      ac: 12,
-      currentHp: 30,
-      maxHp: 30,
-    },
     combatants: [
       {
         id: "goblin-1",
@@ -31,6 +25,7 @@ function makeEncounter(overrides: Partial<Encounter> = {}): Encounter {
         instanceName: "Goblin #1",
         currentHp: 7,
         maxHp: 7,
+        tempHp: 0,
         conditions: [],
         isActive: true,
       },
@@ -67,16 +62,23 @@ describe("encounter repository", () => {
       encounterId,
       makeEncounter({
         name: "Vitest M3 Encounter Updated",
-        target: {
-          name: "Training Dummy",
-          ac: 13,
-          currentHp: 24,
-          maxHp: 30,
-        },
+        combatants: [
+          {
+            id: "goblin-1",
+            creatureId: "goblin",
+            instanceName: "Goblin #1",
+            currentHp: 5,
+            maxHp: 7,
+            tempHp: 3,
+            conditions: [],
+            isActive: true,
+          },
+        ],
       }),
     );
     expect(updated?.name).toBe("Vitest M3 Encounter Updated");
-    expect(updated?.target.currentHp).toBe(24);
+    expect(updated?.combatants[0]?.currentHp).toBe(5);
+    expect(updated?.combatants[0]?.tempHp).toBe(3);
 
     await expect(deleteEncounter(encounterId)).resolves.toBe(true);
     await expect(getEncounter(encounterId)).resolves.toBeNull();

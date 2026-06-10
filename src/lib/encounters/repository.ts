@@ -6,12 +6,22 @@ function toEncounter(value: unknown) {
   return EncounterSchema.parse(value);
 }
 
+function toEncounterOrNull(value: unknown) {
+  const result = EncounterSchema.safeParse(value);
+
+  return result.success ? result.data : null;
+}
+
 export async function listEncounters() {
   await connectToMongo();
 
   const documents = await EncounterModel.find({}, { _id: 0 }).sort({ updatedAt: -1 }).lean().exec();
 
-  return documents.map(toEncounter);
+  return documents.flatMap((document) => {
+    const encounter = toEncounterOrNull(document);
+
+    return encounter ? [encounter] : [];
+  });
 }
 
 export async function getEncounter(id: string) {
@@ -19,7 +29,7 @@ export async function getEncounter(id: string) {
 
   const document = await EncounterModel.findOne({ id }, { _id: 0 }).lean().exec();
 
-  return document ? toEncounter(document) : null;
+  return document ? toEncounterOrNull(document) : null;
 }
 
 export async function createEncounter(input: Encounter) {

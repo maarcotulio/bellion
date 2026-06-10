@@ -50,8 +50,7 @@ export default async function CombatPage() {
               >
                 <h2 className="font-display text-2xl font-semibold">{encounter.name}</h2>
                 <p className="mt-2 font-mono text-sm text-muted-foreground">
-                  {encounter.combatants.length} combatants · Target {encounter.target.name} HP{" "}
-                  {encounter.target.currentHp}/{encounter.target.maxHp}
+                  {encounter.combatants.length} combatants · {encounter.log.length} log entries
                 </p>
               </Link>
             ))

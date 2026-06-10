@@ -61,6 +61,28 @@ export function parseDice(expression: string): ParsedDice {
   };
 }
 
+function formatModifier(modifier: number) {
+  if (modifier === 0) {
+    return "";
+  }
+
+  return modifier > 0 ? ` + ${modifier}` : ` - ${Math.abs(modifier)}`;
+}
+
+export function formatRollExpression({
+  expression,
+  rolls,
+  modifier,
+}: {
+  readonly expression: string;
+  readonly rolls: readonly number[];
+  readonly modifier: number;
+}) {
+  const baseExpression = expression.replace(/[+-]\d+$/, "");
+
+  return `${baseExpression} [${rolls.join(", ")}]${formatModifier(modifier)}`;
+}
+
 function rollDie(sides: number, random: RandomSource) {
   return Math.floor(random() * sides) + 1;
 }

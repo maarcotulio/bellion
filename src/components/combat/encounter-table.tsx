@@ -9,11 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckboxField } from "@/components/ui/checkbox-field";
 import { CombatLog } from "@/components/ui/combat-log";
 import { HpBar } from "@/components/ui/hp-bar";
+import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select-field";
-import { runEncounterRound } from "@/lib/combat/encounter-round";
+import { applyDamageToCombatant, runEncounterRound } from "@/lib/combat/encounter-round";
 import type { ResistanceMode } from "@/lib/dice";
 import type { Creature } from "@/lib/schemas/creature";
-import { EncounterSchema, type Encounter } from "@/lib/schemas/encounter";
+import { EncounterSchema, type Combatant, type Encounter } from "@/lib/schemas/encounter";
 
 type EncounterTableProps = {
   readonly initialEncounter: Encounter;
@@ -35,6 +36,10 @@ function isEncounterResponse(value: unknown): value is EncounterResponse {
 
 function defaultActionName(creature: Creature | undefined) {
   return creature?.actions.find((action) => action.attackBonus !== undefined && action.damage?.[0])?.name ?? "";
+}
+
+function defaultTargetId(combatantId: string, combatants: readonly Combatant[]) {
+  return combatants.find((combatant) => combatant.id !== combatantId && combatant.currentHp > 0)?.id ?? "";
 }
 
 function downloadEncounter(encounter: Encounter) {
@@ -63,6 +68,15 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
       }),
     ),
   );
+  const [targetByCombatantId, setTargetByCombatantId] = useState<Readonly<Record<string, string>>>(
+    Object.fromEntries(
+      initialEncounter.combatants.map((combatant) => [
+        combatant.id,
+        defaultTargetId(combatant.id, initialEncounter.combatants),
+      ]),
+    ),
+  );
+  const [hpInputByCombatantId, setHpInputByCombatantId] = useState<Readonly<Record<string, string>>>({});
   const [damageMode, setDamageMode] = useState<ResistanceMode>("normal");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -78,6 +92,27 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
       ...current,
       [combatantId]: actionName,
     }));
+  }
+
+  function setTarget(combatantId: string, targetId: string) {
+    setTargetByCombatantId((current) => ({
+      ...current,
+      [combatantId]: targetId,
+    }));
+  }
+
+  function setHpInput(combatantId: string, value: string) {
+    setHpInputByCombatantId((current) => ({
+      ...current,
+      [combatantId]: value,
+    }));
+  }
+
+  function hpInputValue(combatantId: string) {
+    const rawValue = hpInputByCombatantId[combatantId] ?? "1";
+    const parsedValue = Number(rawValue);
+
+    return Number.isFinite(parsedValue) ? Math.max(0, Math.floor(parsedValue)) : 0;
   }
 
   async function persist(nextEncounter: Encounter) {
@@ -106,12 +141,49 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
     }
   }
 
+  async function updateCombatant(combatantId: string, transform: (combatant: Combatant) => Combatant) {
+    const nextEncounter: Encounter = {
+      ...encounter,
+      combatants: encounter.combatants.map((combatant) =>
+        combatant.id === combatantId ? transform(combatant) : combatant,
+      ),
+      updatedAt: new Date().toISOString(),
+    };
+
+    await persist(nextEncounter);
+  }
+
+  async function healCombatant(combatantId: string) {
+    const amount = hpInputValue(combatantId);
+
+    await updateCombatant(combatantId, (combatant) => ({
+      ...combatant,
+      currentHp: Math.min(combatant.maxHp, combatant.currentHp + amount),
+    }));
+  }
+
+  async function damageCombatant(combatantId: string) {
+    await updateCombatant(combatantId, (combatant) =>
+      applyDamageToCombatant(combatant, hpInputValue(combatantId)),
+    );
+  }
+
+  async function addTempHp(combatantId: string) {
+    const amount = hpInputValue(combatantId);
+
+    await updateCombatant(combatantId, (combatant) => ({
+      ...combatant,
+      tempHp: (combatant.tempHp ?? 0) + amount,
+    }));
+  }
+
   async function runRound() {
     const nextEncounter = runEncounterRound({
       encounter,
       creatures,
       selectedCombatantIds: selectedIds,
       actionByCombatantId,
+      targetByCombatantId,
       damageMode,
     });
 
@@ -121,23 +193,6 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
       <section className="grid gap-4">
-        <Card>
-          <CardHeader>
-            <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Target</p>
-            <CardTitle>{encounter.target.name}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="font-mono text-sm text-muted-foreground">
-              AC {encounter.target.ac} · HP {encounter.target.currentHp}/{encounter.target.maxHp}
-            </p>
-            <HpBar
-              current={encounter.target.currentHp}
-              max={encounter.target.maxHp}
-              className="mt-4"
-            />
-          </CardContent>
-        </Card>
-
         <Card>
           <CardHeader className="gap-4 sm:flex sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -165,7 +220,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
                   key={combatant.id}
                   className="rounded-lg border border-border bg-background p-4"
                 >
-                  <div className="grid gap-4 lg:grid-cols-[auto_1fr_220px] lg:items-center">
+                  <div className="grid gap-4 xl:grid-cols-[auto_minmax(0,1fr)_180px_180px] xl:items-center">
                     <CheckboxField
                       id={`combatant-${combatant.id}`}
                       label="Active"
@@ -176,7 +231,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
                     <div>
                       <p className="font-semibold">{combatant.instanceName}</p>
                       <p className="mt-1 font-mono text-xs text-muted-foreground">
-                        HP {combatant.currentHp}/{combatant.maxHp}
+                        HP {combatant.currentHp}/{combatant.maxHp} · Temp {combatant.tempHp ?? 0}
                       </p>
                       <HpBar
                         current={combatant.currentHp}
@@ -196,6 +251,53 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
                         </option>
                       ))}
                     </SelectField>
+                    <SelectField
+                      label="Target"
+                      value={targetByCombatantId[combatant.id] ?? ""}
+                      onChange={(value) => setTarget(combatant.id, value)}
+                    >
+                      <option value="">None</option>
+                      {encounter.combatants
+                        .filter((candidate) => candidate.id !== combatant.id)
+                        .map((candidate) => (
+                          <option key={candidate.id} value={candidate.id}>
+                            {candidate.instanceName}
+                          </option>
+                        ))}
+                    </SelectField>
+                  </div>
+                  <div className="mt-4 grid gap-2 sm:grid-cols-[120px_repeat(3,minmax(0,1fr))]">
+                    <Input
+                      type="number"
+                      min={0}
+                      value={hpInputByCombatantId[combatant.id] ?? "1"}
+                      onChange={(event) => setHpInput(combatant.id, event.target.value)}
+                      aria-label={`${combatant.instanceName} hit point amount`}
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => healCombatant(combatant.id)}
+                      disabled={isSaving}
+                    >
+                      Heal
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => damageCombatant(combatant.id)}
+                      disabled={isSaving}
+                    >
+                      Damage
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => addTempHp(combatant.id)}
+                      disabled={isSaving}
+                    >
+                      Temp HP
+                    </Button>
                   </div>
                 </article>
               );

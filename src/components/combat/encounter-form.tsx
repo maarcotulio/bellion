@@ -43,12 +43,10 @@ function isEncounterResponse(value: unknown): value is EncounterResponse {
 export function EncounterForm({ creatures }: EncounterFormProps) {
   const router = useRouter();
   const [name, setName] = useState("New Encounter");
-  const [targetCreatureId, setTargetCreatureId] = useState(creatures[0]?.id ?? "");
   const [combatantCreatureId, setCombatantCreatureId] = useState(creatures[0]?.id ?? "");
   const [combatants, setCombatants] = useState<Combatant[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const targetCreature = creatures.find((creature) => creature.id === targetCreatureId);
 
   function addCombatant() {
     const creature = creatures.find((candidate) => candidate.id === combatantCreatureId);
@@ -67,6 +65,7 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
         instanceName: `${creature.name} #${count}`,
         currentHp: creature.hp.average,
         maxHp: creature.hp.average,
+        tempHp: 0,
         conditions: [],
         isActive: true,
       },
@@ -80,11 +79,6 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
   async function saveEncounter() {
     setError(null);
 
-    if (!targetCreature) {
-      setError("Pick target creature.");
-      return;
-    }
-
     if (combatants.length === 0) {
       setError("Add at least one combatant.");
       return;
@@ -97,12 +91,6 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
       const payload: Encounter = {
         id: createId(name),
         name,
-        target: {
-          name: targetCreature.name,
-          ac: targetCreature.ac.value,
-          currentHp: targetCreature.hp.average,
-          maxHp: targetCreature.hp.average,
-        },
         combatants: [...combatants],
         log: [],
         createdAt: now,
@@ -166,13 +154,6 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
               onChange={(event) => setName(event.target.value)}
             />
           </div>
-          <SelectField label="Target" value={targetCreatureId} onChange={setTargetCreatureId}>
-            {creatures.map((creature) => (
-              <option key={creature.id} value={creature.id}>
-                {creature.name}
-              </option>
-            ))}
-          </SelectField>
           <div className="grid gap-3 border-t border-border pt-5 sm:grid-cols-[1fr_auto] sm:items-end">
             <SelectField
               label="Combatant"
@@ -234,20 +215,6 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
           ) : (
             <p className="text-sm text-muted-foreground">No combatants yet.</p>
           )}
-          {targetCreature ? (
-            <div className="rounded-md border border-border bg-background/70 p-3">
-              <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                Target preview
-              </p>
-              <p className="mt-2 font-medium">{targetCreature.name}</p>
-              <HpBar
-                current={targetCreature.hp.average}
-                max={targetCreature.hp.average}
-                size="sm"
-                className="mt-2"
-              />
-            </div>
-          ) : null}
         </CardContent>
       </Card>
     </div>

@@ -1,4 +1,4 @@
-# Bellion Schema
+# Royal Bellion Schema
 
 ## Source of Truth
 

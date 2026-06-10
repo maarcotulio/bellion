@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export const EncounterTargetSchema = z
-  .object({
-    name: z.string().min(1),
-    ac: z.number().int().positive(),
-    currentHp: z.number().int().min(0),
-    maxHp: z.number().int().positive(),
-  })
-  .strict();
-
 export const CombatantSchema = z
   .object({
     id: z.string().min(1),
@@ -23,11 +14,31 @@ export const CombatantSchema = z
   })
   .strict();
 
+export const CombatLogRollSchema = z
+  .object({
+    expression: z.string().min(1),
+    rolls: z.array(z.number().int().positive()),
+    modifier: z.number().int(),
+    total: z.number().int(),
+  })
+  .strict();
+
+export const CombatLogDamageSchema = CombatLogRollSchema.extend({
+  type: z.string().min(1),
+  mode: z.enum(["normal", "half", "double", "immune"]),
+  rawTotal: z.number().int().min(0),
+});
+
 export const CombatLogEntrySchema = z
   .object({
     id: z.string().min(1),
     createdAt: z.string().datetime({ offset: true }),
-    text: z.string().min(1),
+    attackerName: z.string().min(1),
+    targetName: z.string().min(1),
+    actionName: z.string().min(1),
+    outcome: z.enum(["hit", "miss", "critical"]),
+    toHit: CombatLogRollSchema,
+    damage: CombatLogDamageSchema.optional(),
   })
   .strict();
 
@@ -35,7 +46,6 @@ export const EncounterSchema = z
   .object({
     id: z.string().min(1),
     name: z.string().min(1),
-    target: EncounterTargetSchema,
     combatants: z.array(CombatantSchema).min(1),
     log: z.array(CombatLogEntrySchema),
     createdAt: z.string().datetime({ offset: true }),
@@ -45,5 +55,4 @@ export const EncounterSchema = z
 
 export type Encounter = z.infer<typeof EncounterSchema>;
 export type Combatant = z.infer<typeof CombatantSchema>;
-export type EncounterTarget = z.infer<typeof EncounterTargetSchema>;
 export type CombatLogEntry = z.infer<typeof CombatLogEntrySchema>;

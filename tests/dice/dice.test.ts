@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  formatRollExpression,
   parseDice,
   resolveAttack,
   resolveDamage,
@@ -25,6 +26,13 @@ function fixedRolls(values: readonly number[]): RandomSource {
 }
 
 describe("dice engine", () => {
+  it("formats roll breakdowns for audit cards", () => {
+    expect(formatRollExpression({ expression: "1d20", rolls: [8], modifier: 6 })).toBe(
+      "1d20 [8] + 6",
+    );
+    expect(formatRollExpression({ expression: "1d8", rolls: [2], modifier: 0 })).toBe("1d8 [2]");
+  });
+
   it("parses a dice expression with positive modifier", () => {
     expect(parseDice("2d6+3")).toEqual({
       count: 2,

@@ -2,16 +2,6 @@ import { model, models, Schema, type Model } from "mongoose";
 
 import type { Encounter } from "@/lib/schemas/encounter";
 
-const targetSchema = new Schema(
-  {
-    name: { type: String, required: true },
-    ac: { type: Number, required: true },
-    currentHp: { type: Number, required: true },
-    maxHp: { type: Number, required: true },
-  },
-  { _id: false },
-);
-
 const combatantSchema = new Schema(
   {
     id: { type: String, required: true },
@@ -31,7 +21,25 @@ const logEntrySchema = new Schema(
   {
     id: { type: String, required: true },
     createdAt: { type: String, required: true },
-    text: { type: String, required: true },
+    attackerName: { type: String, required: true },
+    targetName: { type: String, required: true },
+    actionName: { type: String, required: true },
+    outcome: { type: String, required: true, enum: ["hit", "miss", "critical"] },
+    toHit: {
+      expression: { type: String, required: true },
+      rolls: { type: [Number], required: true },
+      modifier: { type: Number, required: true },
+      total: { type: Number, required: true },
+    },
+    damage: {
+      expression: { type: String },
+      rolls: { type: [Number] },
+      modifier: { type: Number },
+      total: { type: Number },
+      type: { type: String },
+      mode: { type: String, enum: ["normal", "half", "double", "immune"] },
+      rawTotal: { type: Number },
+    },
   },
   { _id: false },
 );
@@ -40,7 +48,6 @@ const encounterSchema = new Schema<Encounter>(
   {
     id: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true, index: true },
-    target: { type: targetSchema, required: true },
     combatants: { type: [combatantSchema], required: true },
     log: { type: [logEntrySchema], required: true },
     createdAt: { type: String, required: true },

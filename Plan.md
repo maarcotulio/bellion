@@ -1,4 +1,4 @@
-# Bellion Plan
+# Royal Bellion Plan
 
 Canonical planning docs now live in:
 

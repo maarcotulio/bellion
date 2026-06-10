@@ -1,8 +1,8 @@
-# Bellion Roadmap
+# Royal Bellion Roadmap
 
 ## Product Vision
 
-Bellion is a web tool for Dungeon Masters to manage D&D 5e creature templates, import JSON stat blocks, build monster parties, and run combat against targets with auditable dice output.
+Royal Bellion is a web tool for Dungeon Masters to manage D&D 5e creature templates, import JSON stat blocks, build monster parties, and run combat with auditable dice output.
 
 ```mermaid
 flowchart LR
@@ -57,7 +57,7 @@ Done when:
 - Implement `src/lib/dice/*` with Vitest tests.
 - Cover advantage, disadvantage, crits, resistance, immunity, vulnerability, and modifiers.
 - Add dice sandbox page.
-- Add quick combat page for one attacker against one target.
+- Add quick combat page for one attacker against one defender.
 - Resolve attack rolls, damage rolls, and manual resistance mode.
 
 Done when:
@@ -74,7 +74,7 @@ Done when:
 
 Done when:
 
-- A party of three or more monsters can attack a target, update HP, and record each roll in the log.
+- A party of three or more combatants can attack selected combatants, update HP, and record each roll in the log.
 
 ## M4 - Visual Polish and UX
 
@@ -90,15 +90,3 @@ Done when:
 - The app has cohesive visual identity and the combat flow feels smooth.
 
 Status: **Done**
-
-## M5 - Hardening
-
-- Add seed script with SRD-style creature fixtures.
-- Document environment variables.
-- Prepare Vercel and MongoDB Atlas deploy path.
-- Add basic API rate limiting.
-- Consider auth only if multi-user support becomes necessary.
-
-Done when:
-
-- The MVP is deployable, documented, and resilient enough for regular solo-DM use.

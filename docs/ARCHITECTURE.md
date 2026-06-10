@@ -1,4 +1,4 @@
-# Bellion Architecture
+# Royal Bellion Architecture
 
 ## Current Stack
 
@@ -64,7 +64,7 @@ sequenceDiagram
     participant Combat as Combat Engine
     participant Dice as Dice Engine
 
-    DM->>UI: Select attackers, actions, and target
+    DM->>UI: Select attackers, actions, and combatant targets
     DM->>UI: Run round
     loop Each attacker
         UI->>Combat: resolve attack

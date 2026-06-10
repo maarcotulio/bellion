@@ -13,14 +13,10 @@ import { HpBar } from "@/components/ui/hp-bar";
 import { SelectField } from "@/components/ui/select-field";
 import { resolveAttack, resolveDamage, type ResistanceMode } from "@/lib/dice";
 import type { Creature, CreatureAction } from "@/lib/schemas/creature";
+import type { CombatLogEntry } from "@/lib/schemas/encounter";
 
 type QuickCombatProps = {
   readonly creatures: readonly Creature[];
-};
-
-type CombatLogEntry = {
-  readonly id: string;
-  readonly text: string;
 };
 
 function firstDamagingAction(creature: Creature | undefined) {
@@ -77,22 +73,48 @@ export function QuickCombat({ creatures }: QuickCombatProps) {
     });
     const damageDice = getDamageDice(action);
     let nextHp = targetHp;
-    let text = `${attacker.name} uses ${action.name}: d20 ${attack.roll.total} vs AC ${target.ac.value}. Miss.`;
+    const damage =
+      attack.hit && damageDice
+        ? resolveDamage({
+            dice: damageDice,
+            critical: attack.critical,
+            mode,
+          })
+        : undefined;
 
-    if (attack.hit && damageDice) {
-      const damage = resolveDamage({
-        dice: damageDice,
-        critical: attack.critical,
-        mode,
-      });
+    if (damage) {
       nextHp = Math.max(0, targetHp - damage.total);
-      text = `${attacker.name} uses ${action.name}: hit ${attack.roll.total}${
-        attack.critical ? " crit" : ""
-      }, ${damage.total} damage (${mode}). ${target.name} HP ${nextHp}/${target.hp.average}.`;
     }
 
     setTargetHp(nextHp);
-    setLog((entries) => [{ id: crypto.randomUUID(), text }, ...entries]);
+    setLog((entries) => [
+      {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        attackerName: attacker.name,
+        targetName: target.name,
+        actionName: action.name,
+        outcome: attack.critical ? "critical" : attack.hit ? "hit" : "miss",
+        toHit: {
+          expression: "1d20",
+          rolls: [...attack.roll.rolls],
+          modifier: attack.roll.modifier,
+          total: attack.roll.total,
+        },
+        damage: damage
+          ? {
+              expression: damage.dice,
+              rolls: [...damage.rolls],
+              modifier: damage.modifier,
+              rawTotal: damage.rawTotal,
+              total: damage.total,
+              mode: damage.mode,
+              type: action.damage?.[0]?.type ?? "damage",
+            }
+          : undefined,
+      },
+      ...entries,
+    ]);
   }
 
   if (creatures.length === 0) {

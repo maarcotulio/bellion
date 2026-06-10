@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Bellion",
+  title: "Royal Bellion",
   description: "D&D 5e creature and combat management for Dungeon Masters.",
 };
 

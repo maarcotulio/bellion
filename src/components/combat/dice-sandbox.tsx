@@ -7,8 +7,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckboxField } from "@/components/ui/checkbox-field";
+import { RollAuditCard } from "@/components/ui/combat-log";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SelectField } from "@/components/ui/select-field";
 import { roll, rollD20, type D20Result, type RollResult } from "@/lib/dice";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,7 @@ export function DiceSandbox() {
   const [advantage, setAdvantage] = useState(false);
   const [disadvantage, setDisadvantage] = useState(false);
   const [result, setResult] = useState<SandboxResult | null>(null);
+  const [outputMode, setOutputMode] = useState<"result" | "json">("result");
   const [error, setError] = useState<string | null>(null);
   const [rollKey, setRollKey] = useState(0);
 
@@ -108,22 +111,53 @@ export function DiceSandbox() {
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Result</p>
           <CardTitle>Audit Output</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="grid gap-4">
+          <SelectField label="Output" value={outputMode} onChange={(value) => setOutputMode(value as "result" | "json")}>
+            <option value="result">Result</option>
+            <option value="json">JSON</option>
+          </SelectField>
           {error ? (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : null}
-          {result ? (
+          {result && outputMode === "json" ? (
             <pre
               key={rollKey}
               className={cn(
-                "mt-4 overflow-auto rounded-md border border-border bg-background p-4 font-mono text-sm leading-6",
+                "overflow-auto rounded-md border border-border bg-background p-4 font-mono text-sm leading-6",
                 "animate-dice-pop",
               )}
             >
               {JSON.stringify(result.result, null, 2)}
             </pre>
+          ) : result?.type === "d20" ? (
+            <RollAuditCard
+              key={rollKey}
+              title="D20 Roll"
+              toHit={{
+                expression: "1d20",
+                rolls: [...result.result.rolls],
+                modifier: result.result.modifier,
+                total: result.result.total,
+              }}
+              className="animate-dice-pop"
+            />
+          ) : result?.type === "dice" ? (
+            <RollAuditCard
+              key={rollKey}
+              title="Dice Roll"
+              damage={{
+                expression: result.result.expression,
+                rolls: [...result.result.rolls],
+                modifier: result.result.modifier,
+                total: result.result.total,
+                rawTotal: result.result.total,
+                mode: "normal",
+                type: "total",
+              }}
+              className="animate-dice-pop"
+            />
           ) : (
             <p className="text-sm text-muted-foreground">No roll yet.</p>
           )}
