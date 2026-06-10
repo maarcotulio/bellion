@@ -89,6 +89,18 @@ select.field-input {
   cursor: pointer;
 }
 
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 .arcane-panel {
   box-shadow:
     0 0 32px rgba(62, 208, 255, 0.08),

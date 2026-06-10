@@ -25,7 +25,7 @@ export function CheckboxField({
   ...props
 }: CheckboxFieldProps) {
   return (
-    <div className={cn("flex items-center gap-2.5", className)}>
+    <div className={cn("flex min-h-10 items-center gap-2.5", className)}>
       <Checkbox
         id={id}
         checked={checked}
