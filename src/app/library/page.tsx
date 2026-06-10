@@ -166,7 +166,6 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           </div>
         ) : (
           <EmptyState
-            icon={BookOpen}
             title="No creatures found"
             description="Create a creature manually or import a Royal Bellion JSON stat block."
             className="mt-8"
