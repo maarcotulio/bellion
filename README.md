@@ -2,16 +2,6 @@
 
 Arcane terminal for D&D 5e creature management and monster combat. Royal Bellion lets Dungeon Masters store creature templates, import JSON stat blocks, roll dice with auditable output, and run multi-monster encounters with combatant HP tracking.
 
-## Status
-
-| Milestone | Scope | Status |
-|-----------|-------|--------|
-| M0 | Foundation — Next.js, MongoDB, schemas, docs | Done |
-| M1 | Creature library — CRUD, manual form, JSON import | Done |
-| M2 | Dice engine — sandbox, quick combat, 5e rolls | Done |
-| M3 | Encounters — monster parties, HP bars, round runner | Done |
-| M4 | Visual polish — Arcane Terminal UI, animations, skeletons | Done |
-
 ## Features
 
 - **Creature library** — search and filter by name, type, and CR
