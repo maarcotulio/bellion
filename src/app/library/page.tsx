@@ -44,7 +44,7 @@ function CreatureCard({ creature }: { readonly creature: Creature }) {
             {creature.size} {creature.type}, {creature.alignment}
           </p>
         </div>
-        <div className="rounded-md border border-border bg-background px-3 py-2 text-center font-mono">
+        <div className="w-16 shrink-0 rounded-md border border-border bg-background px-3 py-2 text-center font-mono">
           <p className="text-xs text-muted-foreground">CR</p>
           <p className="text-lg text-accent">{creature.cr}</p>
         </div>
