@@ -132,8 +132,8 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-      <Card>
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <Card className="self-start">
         <CardHeader>
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Encounter Builder</p>
           <CardTitle>New Encounter</CardTitle>
