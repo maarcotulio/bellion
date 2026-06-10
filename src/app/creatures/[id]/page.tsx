@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DeleteCreatureButton } from "@/components/creature/delete-creature-button";
+import { BackLink } from "@/components/layout/back-link";
 import { Button } from "@/components/ui/button";
 import { getCreature } from "@/lib/creatures/repository";
 import type { Creature, CreatureAction } from "@/lib/schemas/creature";
@@ -163,9 +164,7 @@ export default async function CreatureDetailPage({ params }: CreatureDetailPageP
     <main className="min-h-screen bg-background text-foreground">
       <section className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/library" className="font-mono text-sm text-primary hover:text-accent">
-            Back to library
-          </Link>
+          <BackLink href="/library" label="Back to library" />
           <div className="flex flex-wrap gap-3">
             <Button asChild variant="secondary">
               <Link href={`/creatures/${creature.id}/edit`}>

@@ -1,6 +1,7 @@
 import { BookOpen, Plus, Upload } from "lucide-react";
 import Link from "next/link";
 
+import { BackLink } from "@/components/layout/back-link";
 import { Button } from "@/components/ui/button";
 import { listCreatures } from "@/lib/creatures/repository";
 import {
@@ -79,7 +80,8 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <section className="mx-auto w-full max-w-7xl px-6 py-10 sm:px-8">
-        <div className="flex flex-col gap-6 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">
+        <BackLink href="/" label="Back home" />
+        <div className="mt-4 flex flex-col gap-6 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">
               Creature Library

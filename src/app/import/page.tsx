@@ -1,11 +1,11 @@
 "use client";
 
 import { Check, Upload } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ChangeEvent, useState } from "react";
 import { z } from "zod";
 
+import { BackLink } from "@/components/layout/back-link";
 import { Button } from "@/components/ui/button";
 import { formatZodIssues, normalizeCreatureInput } from "@/lib/creatures/validation";
 import type { Creature } from "@/lib/schemas/creature";
@@ -151,9 +151,7 @@ export default function ImportPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <section className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-8">
-        <Link href="/library" className="font-mono text-sm text-primary hover:text-accent">
-          Back to library
-        </Link>
+        <BackLink href="/library" label="Back to library" />
         <div className="mt-4 flex flex-col gap-5 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">

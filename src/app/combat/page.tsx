@@ -1,6 +1,7 @@
-import { Plus } from "lucide-react";
+import { Plus, Swords } from "lucide-react";
 import Link from "next/link";
 
+import { BackLink } from "@/components/layout/back-link";
 import { Button } from "@/components/ui/button";
 import { listEncounters } from "@/lib/encounters/repository";
 
@@ -12,7 +13,8 @@ export default async function CombatPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <section className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-8">
-        <div className="flex flex-col gap-5 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
+        <BackLink href="/" label="Back home" />
+        <div className="mt-4 flex flex-col gap-5 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">
               Encounters
@@ -21,12 +23,20 @@ export default async function CombatPage() {
               Combat Table
             </h1>
           </div>
-          <Button asChild>
-            <Link href="/combat/new">
-              <Plus aria-hidden="true" />
-              New encounter
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="secondary">
+              <Link href="/combat/quick">
+                <Swords aria-hidden="true" />
+                Quick combat
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/combat/new">
+                <Plus aria-hidden="true" />
+                New encounter
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-4">
@@ -47,6 +57,23 @@ export default async function CombatPage() {
           ) : (
             <div className="rounded-lg border border-border bg-card/75 p-8">
               <p className="font-display text-2xl font-semibold">No encounters yet</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Build a monster party or try quick combat for a single attacker.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button asChild>
+                  <Link href="/combat/new">
+                    <Plus aria-hidden="true" />
+                    New encounter
+                  </Link>
+                </Button>
+                <Button asChild variant="secondary">
+                  <Link href="/combat/quick">
+                    <Swords aria-hidden="true" />
+                    Quick combat
+                  </Link>
+                </Button>
+              </div>
             </div>
           )}
         </div>

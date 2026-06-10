@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { BackLink } from "@/components/layout/back-link";
 import { EncounterForm } from "@/components/combat/encounter-form";
 import { listCreatures } from "@/lib/creatures/repository";
 
@@ -11,9 +10,7 @@ export default async function NewEncounterPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <section className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-8">
-        <Link href="/combat" className="font-mono text-sm text-primary hover:text-accent">
-          Back to encounters
-        </Link>
+        <BackLink href="/combat" label="Back to encounters" />
         <p className="mt-6 font-mono text-sm uppercase tracking-[0.18em] text-primary">
           Encounter Builder
         </p>

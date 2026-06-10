@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Cinzel, Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { SiteHeader } from "@/components/layout/site-header";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,7 +34,10 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { EncounterTable } from "@/components/combat/encounter-table";
+import { BackLink } from "@/components/layout/back-link";
 import { listCreatures } from "@/lib/creatures/repository";
 import { getEncounter } from "@/lib/encounters/repository";
 
@@ -24,9 +24,7 @@ export default async function EncounterPage({ params }: EncounterPageProps) {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <section className="mx-auto w-full max-w-7xl px-6 py-10 sm:px-8">
-        <Link href="/combat" className="font-mono text-sm text-primary hover:text-accent">
-          Back to encounters
-        </Link>
+        <BackLink href="/combat" label="Back to encounters" />
         <p className="mt-6 font-mono text-sm uppercase tracking-[0.18em] text-primary">
           Encounter
         </p>
