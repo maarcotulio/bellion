@@ -32,8 +32,8 @@ const milestones = [
   { id: "M1", label: "Creature library", status: "done" },
   { id: "M2", label: "Dice + quick combat", status: "done" },
   { id: "M3", label: "Encounters", status: "done" },
-  { id: "M4", label: "Visual polish", status: "next" },
-  { id: "M5", label: "Hardening", status: "planned" },
+  { id: "M4", label: "Visual polish", status: "done" },
+  { id: "M5", label: "Hardening", status: "next" },
 ] as const;
 
 export default function Home() {
@@ -109,9 +109,9 @@ export default function Home() {
               <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">
                 Roadmap
               </p>
-              <h2 className="mt-2 font-display text-2xl font-semibold">M0 through M3 shipped</h2>
+              <h2 className="mt-2 font-display text-2xl font-semibold">M0 through M4 shipped</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Next up: Arcane Terminal polish, animations, and deploy hardening.
+                Next up: seed data, deploy hardening, and production resilience.
               </p>
             </div>
             <Button asChild variant="secondary">

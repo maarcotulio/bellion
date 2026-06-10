@@ -69,7 +69,7 @@ function ActionList({
 
 function StatBlock({ creature }: { readonly creature: Creature }) {
   return (
-    <article className="rounded-lg border border-border bg-card/80 p-6 shadow-[0_0_36px_rgba(62,208,255,0.08)]">
+    <article className="arcane-panel rounded-lg border border-border bg-card/80 p-6">
       <div className="border-b border-border pb-5">
         <h1 className="font-display text-5xl font-semibold">{creature.name}</h1>
         <p className="mt-2 text-sm capitalize text-muted-foreground">

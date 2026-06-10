@@ -4,7 +4,14 @@ import { Plus, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { HpBar } from "@/components/ui/hp-bar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SelectField } from "@/components/ui/select-field";
 import type { Creature } from "@/lib/schemas/creature";
 import { EncounterSchema, type Combatant, type Encounter } from "@/lib/schemas/encounter";
 
@@ -127,73 +134,99 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
     }
   }
 
+  if (creatures.length === 0) {
+    return (
+      <EmptyState
+        title="No creatures available"
+        description="Add creatures to the library before building an encounter."
+      />
+    );
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-      <section className="grid gap-5 rounded-lg border border-border bg-card/75 p-5">
-        {error ? (
-          <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-sm">
-            {error}
+      <Card>
+        <CardHeader>
+          <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Encounter Builder</p>
+          <CardTitle>New Encounter</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5">
+          {error ? (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          ) : null}
+          <div className="grid gap-2">
+            <Label htmlFor="encounter-name" className="font-mono text-muted-foreground">
+              Encounter name
+            </Label>
+            <Input
+              id="encounter-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
           </div>
-        ) : null}
-        <label className="grid gap-2 text-sm">
-          <span className="font-mono text-muted-foreground">Encounter name</span>
-          <input value={name} onChange={(event) => setName(event.target.value)} className="field-input" />
-        </label>
-        <label className="grid gap-2 text-sm">
-          <span className="font-mono text-muted-foreground">Target</span>
-          <select
-            value={targetCreatureId}
-            onChange={(event) => setTargetCreatureId(event.target.value)}
-            className="field-input"
-          >
+          <SelectField label="Target" value={targetCreatureId} onChange={setTargetCreatureId}>
             {creatures.map((creature) => (
               <option key={creature.id} value={creature.id}>
                 {creature.name}
               </option>
             ))}
-          </select>
-        </label>
-        <div className="grid gap-3 border-t border-border pt-5 sm:grid-cols-[1fr_auto]">
-          <label className="grid gap-2 text-sm">
-            <span className="font-mono text-muted-foreground">Combatant</span>
-            <select
+          </SelectField>
+          <div className="grid gap-3 border-t border-border pt-5 sm:grid-cols-[1fr_auto] sm:items-end">
+            <SelectField
+              label="Combatant"
               value={combatantCreatureId}
-              onChange={(event) => setCombatantCreatureId(event.target.value)}
-              className="field-input"
+              onChange={setCombatantCreatureId}
             >
               {creatures.map((creature) => (
                 <option key={creature.id} value={creature.id}>
                   {creature.name}
                 </option>
               ))}
-            </select>
-          </label>
-          <div className="flex items-end">
+            </SelectField>
             <Button type="button" onClick={addCombatant} className="w-full sm:w-auto">
               <Plus aria-hidden="true" />
               Add
             </Button>
           </div>
-        </div>
-        <Button type="button" onClick={saveEncounter} disabled={isSaving}>
-          <Save aria-hidden="true" />
-          {isSaving ? "Saving" : "Create encounter"}
-        </Button>
-      </section>
+          <Button type="button" onClick={saveEncounter} disabled={isSaving}>
+            <Save aria-hidden="true" />
+            {isSaving ? "Saving" : "Create encounter"}
+          </Button>
+        </CardContent>
+      </Card>
 
-      <aside className="rounded-lg border border-border bg-card/75 p-5">
-        <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Party</p>
-        <div className="mt-4 grid gap-3">
+      <Card>
+        <CardHeader>
+          <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Party</p>
+          <CardTitle>Combatants</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3">
           {combatants.length > 0 ? (
             combatants.map((combatant) => (
-              <div key={combatant.id} className="flex items-center justify-between gap-3 rounded-md border border-border bg-background p-3">
-                <div>
+              <div
+                key={combatant.id}
+                className="flex items-center justify-between gap-3 rounded-md border border-border bg-background p-3"
+              >
+                <div className="min-w-0 flex-1">
                   <p className="font-medium">{combatant.instanceName}</p>
-                  <p className="font-mono text-xs text-muted-foreground">
+                  <p className="mt-1 font-mono text-xs text-muted-foreground">
                     HP {combatant.currentHp}/{combatant.maxHp}
                   </p>
+                  <HpBar
+                    current={combatant.currentHp}
+                    max={combatant.maxHp}
+                    size="sm"
+                    className="mt-2"
+                  />
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeCombatant(combatant.id)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeCombatant(combatant.id)}
+                >
                   <Trash2 aria-hidden="true" />
                 </Button>
               </div>
@@ -201,8 +234,22 @@ export function EncounterForm({ creatures }: EncounterFormProps) {
           ) : (
             <p className="text-sm text-muted-foreground">No combatants yet.</p>
           )}
-        </div>
-      </aside>
+          {targetCreature ? (
+            <div className="rounded-md border border-border bg-background/70 p-3">
+              <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                Target preview
+              </p>
+              <p className="mt-2 font-medium">{targetCreature.name}</p>
+              <HpBar
+                current={targetCreature.hp.average}
+                max={targetCreature.hp.average}
+                size="sm"
+                className="mt-2"
+              />
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
     </div>
   );
 }

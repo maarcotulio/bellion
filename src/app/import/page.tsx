@@ -6,7 +6,9 @@ import { type ChangeEvent, useState } from "react";
 import { z } from "zod";
 
 import { BackLink } from "@/components/layout/back-link";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatZodIssues, normalizeCreatureInput } from "@/lib/creatures/validation";
 import type { Creature } from "@/lib/schemas/creature";
 
@@ -169,73 +171,79 @@ export default function ImportPage() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
-          <section className="grid gap-4 rounded-lg border border-border bg-card/75 p-5">
-            <textarea
-              value={jsonText}
-              onChange={(event) => setJsonText(event.target.value)}
-              rows={28}
-              className="field-input min-h-[36rem] py-4 font-mono text-sm leading-6"
-            />
-            <div className="flex justify-end">
-              <Button type="button" onClick={handleValidate}>
-                <Check aria-hidden="true" />
-                Validate
-              </Button>
-            </div>
-          </section>
+          <Card>
+            <CardContent className="grid gap-4">
+              <textarea
+                value={jsonText}
+                onChange={(event) => setJsonText(event.target.value)}
+                rows={28}
+                className="field-input min-h-[36rem] py-4 font-mono text-sm leading-6"
+              />
+              <div className="flex justify-end">
+                <Button type="button" onClick={handleValidate}>
+                  <Check aria-hidden="true" />
+                  Validate
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           <aside className="grid content-start gap-4">
             {state.status === "valid" ? (
-              <section className="rounded-lg border border-border bg-card/75 p-5">
-                <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">
-                  Preview
-                </p>
-                <h2 className="mt-3 font-display text-3xl font-semibold">
-                  {state.creature.name}
-                </h2>
-                <dl className="mt-5 grid grid-cols-3 gap-3 text-sm">
-                  <div>
-                    <dt className="font-mono text-muted-foreground">Type</dt>
-                    <dd className="mt-1 capitalize">{state.creature.type}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-mono text-muted-foreground">CR</dt>
-                    <dd className="mt-1">{state.creature.cr}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-mono text-muted-foreground">HP</dt>
-                    <dd className="mt-1">{state.creature.hp.average}</dd>
-                  </div>
-                </dl>
-                <Button
-                  type="button"
-                  className="mt-6 w-full"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                >
-                  <Upload aria-hidden="true" />
-                  {isSaving ? "Saving" : "Save import"}
-                </Button>
-              </section>
+              <Card>
+                <CardHeader>
+                  <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">
+                    Preview
+                  </p>
+                  <CardTitle>{state.creature.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <dl className="grid grid-cols-3 gap-3 text-sm">
+                    <div>
+                      <dt className="font-mono text-muted-foreground">Type</dt>
+                      <dd className="mt-1 capitalize">{state.creature.type}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-mono text-muted-foreground">CR</dt>
+                      <dd className="mt-1">{state.creature.cr}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-mono text-muted-foreground">HP</dt>
+                      <dd className="mt-1">{state.creature.hp.average}</dd>
+                    </div>
+                  </dl>
+                  <Button
+                    type="button"
+                    className="mt-6 w-full"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                  >
+                    <Upload aria-hidden="true" />
+                    {isSaving ? "Saving" : "Save import"}
+                  </Button>
+                </CardContent>
+              </Card>
             ) : null}
 
             {state.status === "invalid" ? (
-              <section className="rounded-lg border border-destructive bg-destructive/10 p-5">
-                <p className="font-display text-2xl font-semibold">Validation errors</p>
-                <ul className="mt-4 grid gap-3 text-sm">
-                  {state.issues.map((issue) => (
-                    <li key={`${issue.path}-${issue.message}`}>
-                      <span className="font-mono text-accent">{issue.path}</span>: {issue.message}
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <Alert variant="destructive">
+                <AlertTitle>Validation errors</AlertTitle>
+                <AlertDescription>
+                  <ul className="mt-3 grid gap-2">
+                    {state.issues.map((issue) => (
+                      <li key={`${issue.path}-${issue.message}`}>
+                        <span className="font-mono text-accent">{issue.path}</span>: {issue.message}
+                      </li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
             ) : null}
 
             {saveError ? (
-              <section className="rounded-lg border border-destructive bg-destructive/10 p-5 text-sm">
-                {saveError}
-              </section>
+              <Alert variant="destructive">
+                <AlertDescription>{saveError}</AlertDescription>
+              </Alert>
             ) : null}
           </aside>
         </div>

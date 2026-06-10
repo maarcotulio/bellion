@@ -84,3 +84,56 @@ body {
 .field-input:focus {
   box-shadow: 0 0 0 2px var(--ring);
 }
+
+.arcane-panel {
+  box-shadow:
+    0 0 32px rgba(62, 208, 255, 0.08),
+    inset 0 1px 0 rgba(238, 245, 255, 0.04);
+}
+
+@keyframes hp-impact {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  35% {
+    transform: scaleY(1.15);
+  }
+}
+
+@keyframes dice-pop {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.94) translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes log-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hp-impact {
+  animation: hp-impact 0.45s ease-out;
+}
+
+.animate-dice-pop {
+  animation: dice-pop 0.35s ease-out;
+}
+
+.animate-log-in {
+  animation: log-in 0.3s ease-out;
+}

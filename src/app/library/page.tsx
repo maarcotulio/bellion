@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { BackLink } from "@/components/layout/back-link";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { listCreatures } from "@/lib/creatures/repository";
 import {
   ChallengeRatingSchema,
@@ -30,7 +31,7 @@ function formatOptionalList(values: readonly string[] | undefined) {
 
 function CreatureCard({ creature }: { readonly creature: Creature }) {
   return (
-    <article className="rounded-lg border border-border bg-card/80 p-5 shadow-[0_0_28px_rgba(62,208,255,0.06)]">
+    <article className="arcane-panel rounded-lg border border-border bg-card/80 p-5 transition-colors hover:border-primary/50">
       <div className="flex items-start justify-between gap-4">
         <div>
           <Link
@@ -164,23 +165,25 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
             ))}
           </div>
         ) : (
-          <div className="mt-8 rounded-lg border border-border bg-card/70 p-8">
-            <p className="font-display text-2xl font-semibold">No creatures found</p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Button asChild>
-                <Link href="/creatures/new">
-                  <Plus aria-hidden="true" />
-                  New creature
-                </Link>
-              </Button>
-              <Button asChild variant="secondary">
-                <Link href="/import">
-                  <Upload aria-hidden="true" />
-                  Import JSON
-                </Link>
-              </Button>
-            </div>
-          </div>
+          <EmptyState
+            icon={BookOpen}
+            title="No creatures found"
+            description="Create a creature manually or import a Bellion JSON stat block."
+            className="mt-8"
+          >
+            <Button asChild>
+              <Link href="/creatures/new">
+                <Plus aria-hidden="true" />
+                New creature
+              </Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/import">
+                <Upload aria-hidden="true" />
+                Import JSON
+              </Link>
+            </Button>
+          </EmptyState>
         )}
       </section>
     </main>

@@ -10,7 +10,7 @@ Arcane terminal for D&D 5e creature management and monster combat. Bellion lets 
 | M1 | Creature library — CRUD, manual form, JSON import | Done |
 | M2 | Dice engine — sandbox, quick combat, 5e rolls | Done |
 | M3 | Encounters — monster parties, HP bars, round runner | Done |
-| M4 | Visual polish — animations, responsive UX | Planned |
+| M4 | Visual polish — Arcane Terminal UI, animations, skeletons | Done |
 | M5 | Hardening — seed data, deploy, rate limiting | Planned |
 
 ## Features

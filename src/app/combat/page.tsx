@@ -1,8 +1,9 @@
-import { Plus, Swords } from "lucide-react";
+import { Plus, Shield, Swords } from "lucide-react";
 import Link from "next/link";
 
 import { BackLink } from "@/components/layout/back-link";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { listEncounters } from "@/lib/encounters/repository";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ export default async function CombatPage() {
               <Link
                 key={encounter.id}
                 href={`/combat/${encounter.id}`}
-                className="rounded-lg border border-border bg-card/75 p-5 hover:border-primary"
+                className="arcane-panel rounded-lg border border-border bg-card/75 p-5 transition-colors hover:border-primary"
               >
                 <h2 className="font-display text-2xl font-semibold">{encounter.name}</h2>
                 <p className="mt-2 font-mono text-sm text-muted-foreground">
@@ -55,26 +56,24 @@ export default async function CombatPage() {
               </Link>
             ))
           ) : (
-            <div className="rounded-lg border border-border bg-card/75 p-8">
-              <p className="font-display text-2xl font-semibold">No encounters yet</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Build a monster party or try quick combat for a single attacker.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Button asChild>
-                  <Link href="/combat/new">
-                    <Plus aria-hidden="true" />
-                    New encounter
-                  </Link>
-                </Button>
-                <Button asChild variant="secondary">
-                  <Link href="/combat/quick">
-                    <Swords aria-hidden="true" />
-                    Quick combat
-                  </Link>
-                </Button>
-              </div>
-            </div>
+            <EmptyState
+              icon={Shield}
+              title="No encounters yet"
+              description="Build a monster party or try quick combat for a single attacker."
+            >
+              <Button asChild>
+                <Link href="/combat/new">
+                  <Plus aria-hidden="true" />
+                  New encounter
+                </Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/combat/quick">
+                  <Swords aria-hidden="true" />
+                  Quick combat
+                </Link>
+              </Button>
+            </EmptyState>
           )}
         </div>
       </section>

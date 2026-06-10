@@ -1,9 +1,15 @@
 "use client";
 
-import { Dices, Save } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Dices, Download, Save } from "lucide-react";
+import { useState } from "react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckboxField } from "@/components/ui/checkbox-field";
+import { CombatLog } from "@/components/ui/combat-log";
+import { HpBar } from "@/components/ui/hp-bar";
+import { SelectField } from "@/components/ui/select-field";
 import { runEncounterRound } from "@/lib/combat/encounter-round";
 import type { ResistanceMode } from "@/lib/dice";
 import type { Creature } from "@/lib/schemas/creature";
@@ -31,6 +37,16 @@ function defaultActionName(creature: Creature | undefined) {
   return creature?.actions.find((action) => action.attackBonus !== undefined && action.damage?.[0])?.name ?? "";
 }
 
+function downloadEncounter(encounter: Encounter) {
+  const blob = new Blob([JSON.stringify(encounter, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${encounter.id}.json`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
 export function EncounterTable({ initialEncounter, creatures }: EncounterTableProps) {
   const [encounter, setEncounter] = useState(initialEncounter);
   const [selectedIds, setSelectedIds] = useState<readonly string[]>(
@@ -49,10 +65,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
   );
   const [damageMode, setDamageMode] = useState<ResistanceMode>("normal");
   const [isSaving, setIsSaving] = useState(false);
-  const hpPercent = useMemo(
-    () => Math.max(0, Math.min(100, (encounter.target.currentHp / encounter.target.maxHp) * 100)),
-    [encounter.target.currentHp, encounter.target.maxHp],
-  );
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   function toggleCombatant(id: string, checked: boolean) {
     setSelectedIds((current) =>
@@ -69,6 +82,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
 
   async function persist(nextEncounter: Encounter) {
     setIsSaving(true);
+    setSaveError(null);
 
     try {
       const response = await fetch(`/api/encounters/${encounter.id}`, {
@@ -82,7 +96,11 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
         setEncounter(data.encounter);
       } else {
         setEncounter(nextEncounter);
+        setSaveError("Encounter updated locally but could not be saved.");
       }
+    } catch {
+      setEncounter(nextEncounter);
+      setSaveError("Encounter updated locally but could not be saved.");
     } finally {
       setIsSaving(false);
     }
@@ -103,103 +121,118 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
       <section className="grid gap-4">
-        <div className="rounded-lg border border-border bg-card/75 p-5">
-          <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Target</p>
-          <h2 className="mt-3 font-display text-3xl font-semibold">{encounter.target.name}</h2>
-          <p className="mt-2 font-mono text-sm text-muted-foreground">
-            AC {encounter.target.ac} · HP {encounter.target.currentHp}/{encounter.target.maxHp}
-          </p>
-          <div className="mt-4 h-3 overflow-hidden rounded-full bg-background">
-            <div className="h-full bg-primary" style={{ width: `${hpPercent}%` }} />
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Target</p>
+            <CardTitle>{encounter.target.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="font-mono text-sm text-muted-foreground">
+              AC {encounter.target.ac} · HP {encounter.target.currentHp}/{encounter.target.maxHp}
+            </p>
+            <HpBar
+              current={encounter.target.currentHp}
+              max={encounter.target.maxHp}
+              className="mt-4"
+            />
+          </CardContent>
+        </Card>
 
-        <div className="rounded-lg border border-border bg-card/75 p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <Card>
+          <CardHeader className="gap-4 sm:flex sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Party</p>
-              <h2 className="mt-3 font-display text-3xl font-semibold">Combatants</h2>
+              <CardTitle>Combatants</CardTitle>
             </div>
-            <label className="grid gap-2 text-sm">
-              <span className="font-mono text-muted-foreground">Damage mode</span>
-              <select
-                value={damageMode}
-                onChange={(event) => setDamageMode(event.target.value as ResistanceMode)}
-                className="field-input"
-              >
-                <option value="normal">Normal</option>
-                <option value="half">Half</option>
-                <option value="double">Double</option>
-                <option value="immune">Immune</option>
-              </select>
-            </label>
-          </div>
-
-          <div className="mt-5 grid gap-3">
+            <SelectField
+              label="Damage mode"
+              value={damageMode}
+              onChange={(value) => setDamageMode(value as ResistanceMode)}
+              className="w-full sm:w-44"
+            >
+              <option value="normal">Normal</option>
+              <option value="half">Half</option>
+              <option value="double">Double</option>
+              <option value="immune">Immune</option>
+            </SelectField>
+          </CardHeader>
+          <CardContent className="grid gap-3">
             {encounter.combatants.map((combatant) => {
               const creature = creatures.find((candidate) => candidate.id === combatant.creatureId);
-              const percent = Math.max(0, Math.min(100, (combatant.currentHp / combatant.maxHp) * 100));
 
               return (
-                <article key={combatant.id} className="rounded-lg border border-border bg-background p-4">
+                <article
+                  key={combatant.id}
+                  className="rounded-lg border border-border bg-background p-4"
+                >
                   <div className="grid gap-4 lg:grid-cols-[auto_1fr_220px] lg:items-center">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(combatant.id)}
-                        disabled={combatant.currentHp <= 0}
-                        onChange={(event) => toggleCombatant(combatant.id, event.target.checked)}
-                        className="size-4"
-                      />
-                      Active
-                    </label>
+                    <CheckboxField
+                      id={`combatant-${combatant.id}`}
+                      label="Active"
+                      checked={selectedIds.includes(combatant.id)}
+                      disabled={combatant.currentHp <= 0}
+                      onCheckedChange={(checked) => toggleCombatant(combatant.id, checked)}
+                    />
                     <div>
                       <p className="font-semibold">{combatant.instanceName}</p>
                       <p className="mt-1 font-mono text-xs text-muted-foreground">
                         HP {combatant.currentHp}/{combatant.maxHp}
                       </p>
-                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-card">
-                        <div className="h-full bg-accent" style={{ width: `${percent}%` }} />
-                      </div>
+                      <HpBar
+                        current={combatant.currentHp}
+                        max={combatant.maxHp}
+                        size="sm"
+                        className="mt-2"
+                      />
                     </div>
-                    <select
+                    <SelectField
+                      label="Action"
                       value={actionByCombatantId[combatant.id] ?? ""}
-                      onChange={(event) => setAction(combatant.id, event.target.value)}
-                      className="field-input"
+                      onChange={(value) => setAction(combatant.id, value)}
                     >
                       {creature?.actions.map((action) => (
                         <option key={action.name} value={action.name}>
                           {action.name}
                         </option>
                       ))}
-                    </select>
+                    </SelectField>
                   </div>
                 </article>
               );
             })}
-          </div>
 
-          <Button type="button" onClick={runRound} disabled={isSaving} className="mt-5">
-            {isSaving ? <Save aria-hidden="true" /> : <Dices aria-hidden="true" />}
-            {isSaving ? "Saving" : "Run round"}
-          </Button>
-        </div>
+            {saveError ? (
+              <Alert variant="destructive">
+                <AlertDescription>{saveError}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            <div className="flex flex-wrap gap-3">
+              <Button type="button" onClick={runRound} disabled={isSaving}>
+                {isSaving ? <Save aria-hidden="true" /> : <Dices aria-hidden="true" />}
+                {isSaving ? "Saving" : "Run round"}
+              </Button>
+              <Button type="button" variant="secondary" onClick={() => downloadEncounter(encounter)}>
+                <Download aria-hidden="true" />
+                Export JSON
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
-      <aside className="rounded-lg border border-border bg-card/75 p-5">
-        <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Combat Log</p>
-        <div className="mt-4 grid gap-3">
-          {encounter.log.length > 0 ? (
-            [...encounter.log].reverse().map((entry) => (
-              <p key={entry.id} className="text-sm leading-6 text-muted-foreground">
-                {entry.text}
-              </p>
-            ))
-          ) : (
-            <p className="text-sm text-muted-foreground">No rounds yet.</p>
-          )}
-        </div>
-      </aside>
+      <Card>
+        <CardHeader>
+          <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Combat Log</p>
+          <CardTitle>Battle Feed</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CombatLog
+            entries={[...encounter.log].reverse()}
+            emptyMessage="No rounds yet."
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

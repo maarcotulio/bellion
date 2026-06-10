@@ -79,6 +79,7 @@ Done when:
 ## M4 - Visual Polish and UX
 
 - Apply Arcane Terminal design across pages.
+- Add shadcn/ui checkbox, label, card, alert, skeleton, and shared form primitives.
 - Add dice roll, damage impact, and HP transition animations.
 - Add responsive tablet-first layout.
 - Add empty states, loading skeletons, and error feedback.
@@ -87,6 +88,8 @@ Done when:
 Done when:
 
 - The app has cohesive visual identity and the combat flow feels smooth.
+
+Status: **Done**
 
 ## M5 - Hardening
 

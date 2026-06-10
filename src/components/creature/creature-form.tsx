@@ -4,7 +4,9 @@ import { Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChallengeRatingSchema,
   CreatureSchema,
@@ -161,14 +163,16 @@ export function CreatureForm({ mode, creature = defaultCreature }: CreatureFormP
   return (
     <form onSubmit={handleSubmit} className="grid gap-6">
       {error ? (
-        <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-sm text-foreground">
-          {error}
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       ) : null}
 
-      <section className="grid gap-4 rounded-lg border border-border bg-card/75 p-5">
-        <h2 className="font-display text-2xl font-semibold">Identity</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Identity</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-2">
           <Field label="ID">
             <input
               name="id"
@@ -215,11 +219,14 @@ export function CreatureForm({ mode, creature = defaultCreature }: CreatureFormP
               ))}
             </select>
           </Field>
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
-      <section className="grid gap-4 rounded-lg border border-border bg-card/75 p-5">
-        <h2 className="font-display text-2xl font-semibold">Combat Stats</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Combat Stats</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
         <div className="grid gap-4 md:grid-cols-4">
           <Field label="AC">
             <input
@@ -268,11 +275,14 @@ export function CreatureForm({ mode, creature = defaultCreature }: CreatureFormP
             </Field>
           ))}
         </div>
-      </section>
+        </CardContent>
+      </Card>
 
-      <section className="grid gap-4 rounded-lg border border-border bg-card/75 p-5">
-        <h2 className="font-display text-2xl font-semibold">Structured Fields</h2>
-        <div className="grid gap-4 lg:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Structured Fields</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 lg:grid-cols-2">
           <JsonField label="Speed" name="speed" value={creature.speed} />
           <JsonField label="Saving Throws" name="savingThrows" value={creature.savingThrows} />
           <JsonField label="Skills" name="skills" value={creature.skills} />
@@ -302,8 +312,8 @@ export function CreatureForm({ mode, creature = defaultCreature }: CreatureFormP
           <JsonField label="Actions" name="actions" value={creature.actions} rows={8} />
           <JsonField label="Bonus Actions" name="bonusActions" value={creature.bonusActions} />
           <JsonField label="Reactions" name="reactions" value={creature.reactions} />
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting}>
