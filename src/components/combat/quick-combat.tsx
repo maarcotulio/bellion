@@ -120,7 +120,6 @@ export function QuickCombat({ creatures }: QuickCombatProps) {
   if (creatures.length === 0) {
     return (
       <EmptyState
-        icon={HeartPulse}
         title="No creatures available"
         description="Create or import creatures before running quick combat."
       >
