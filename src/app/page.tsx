@@ -1,4 +1,4 @@
-import { BookOpen, Dices, ScrollText, Shield, Swords, Upload } from "lucide-react";
+import { BookOpen, Dices, ScrollText, Swords, Upload } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ const modules = [
     href: "/dice",
   },
   {
-    icon: Shield,
+    icon: Swords,
     label: "Combat Table",
     description: "Run monster parties with combatant HP tracking.",
     href: "/combat",
@@ -66,7 +66,7 @@ export default function Home() {
             </Button>
             <Button asChild variant="secondary">
               <Link href="/combat">
-                <Shield aria-hidden="true" />
+                <Swords aria-hidden="true" />
                 Encounters
               </Link>
             </Button>

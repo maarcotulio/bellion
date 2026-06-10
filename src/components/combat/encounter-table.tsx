@@ -191,7 +191,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
       <section className="grid gap-4">
         <Card>
           <CardHeader className="gap-4 sm:flex sm:flex-row sm:items-end sm:justify-between">
@@ -332,6 +332,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
           <CombatLog
             entries={[...encounter.log].reverse()}
             emptyMessage="No rounds yet."
+            className="max-h-[34rem] overflow-y-auto pr-2"
           />
         </CardContent>
       </Card>

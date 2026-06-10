@@ -1,11 +1,11 @@
-import { BookOpen, Dices, Home, Shield } from "lucide-react";
+import { BookOpen, Dices, Home, Swords } from "lucide-react";
 import Link from "next/link";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/library", label: "Library", icon: BookOpen },
   { href: "/dice", label: "Dice", icon: Dices },
-  { href: "/combat", label: "Combat", icon: Shield },
+  { href: "/combat", label: "Combat", icon: Swords },
 ] as const;
 
 export function SiteHeader() {

@@ -135,8 +135,8 @@ export function QuickCombat({ creatures }: QuickCombatProps) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-      <Card>
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <Card className="self-start">
         <CardHeader>
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Quick Combat</p>
           <CardTitle>Resolve Attack</CardTitle>
@@ -220,7 +220,11 @@ export function QuickCombat({ creatures }: QuickCombatProps) {
             <CardTitle>Battle Feed</CardTitle>
           </CardHeader>
           <CardContent>
-            <CombatLog entries={log} emptyMessage="No attacks yet." />
+            <CombatLog
+              entries={log}
+              emptyMessage="No attacks yet."
+              className="max-h-[18rem] overflow-y-auto pr-2"
+            />
           </CardContent>
         </Card>
       </aside>
