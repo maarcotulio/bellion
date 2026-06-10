@@ -1,6 +1,7 @@
 import { BookOpen, Plus, Upload } from "lucide-react";
 import Link from "next/link";
 
+import { BackupControls } from "@/components/data/backup-controls";
 import { BackLink } from "@/components/layout/back-link";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -104,6 +105,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                 Import JSON
               </Link>
             </Button>
+            <BackupControls />
           </div>
         </div>
 
@@ -182,6 +184,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                 Import JSON
               </Link>
             </Button>
+            <BackupControls />
           </EmptyState>
         )}
       </section>

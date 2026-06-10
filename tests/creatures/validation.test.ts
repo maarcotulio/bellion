@@ -19,17 +19,30 @@ const baseCreatureInput = {
 };
 
 describe("creature input normalization", () => {
-  it("creates stable ids from creature names", () => {
-    expect(createCreatureId("  Cave Brute!! ")).toBe("cave-brute");
+  it("creates UUID ids", () => {
+    expect(createCreatureId()).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    );
   });
 
-  it("normalizes imported JSON into a valid creature", () => {
+  it("normalizes imported JSON into a valid creature with a generated id", () => {
     const creature = normalizeCreatureInput(baseCreatureInput);
 
-    expect(creature.id).toBe("cave-brute");
+    expect(creature.id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    );
     expect(creature.source).toBe("manual");
     expect(creature.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     expect(creature.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it("ignores caller-provided ids for new creatures", () => {
+    const creature = normalizeCreatureInput({
+      ...baseCreatureInput,
+      id: "caller-selected-id",
+    });
+
+    expect(creature.id).not.toBe("caller-selected-id");
   });
 
   it("rejects invalid dice expressions with field-level paths", () => {

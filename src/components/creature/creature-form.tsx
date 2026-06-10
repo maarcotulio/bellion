@@ -89,7 +89,6 @@ export function CreatureForm({ mode, creature = defaultCreature }: CreatureFormP
 
     try {
       const payload = {
-        id: readString(formData, "id") || undefined,
         name: readString(formData, "name"),
         size: readString(formData, "size"),
         type: readString(formData, "type"),
@@ -173,14 +172,6 @@ export function CreatureForm({ mode, creature = defaultCreature }: CreatureFormP
           <CardTitle>Identity</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
-          <Field label="ID">
-            <input
-              name="id"
-              defaultValue={creature.id}
-              disabled={mode === "edit"}
-              className="field-input disabled:opacity-60"
-            />
-          </Field>
           <Field label="Name">
             <input name="name" defaultValue={creature.name} required className="field-input" />
           </Field>

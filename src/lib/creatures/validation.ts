@@ -2,19 +2,14 @@ import { z } from "zod";
 
 import { CreatureSchema } from "@/lib/schemas/creature";
 
-export function createCreatureId(name: string) {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+export function createCreatureId() {
+  return crypto.randomUUID();
 }
 
 export function normalizeCreatureInput(input: unknown) {
   const now = new Date().toISOString();
   const candidate = z
     .object({
-      id: z.string().min(1).optional(),
       name: z.string().min(1),
     })
     .passthrough()
@@ -22,7 +17,7 @@ export function normalizeCreatureInput(input: unknown) {
 
   return CreatureSchema.parse({
     ...candidate,
-    id: candidate.id ?? createCreatureId(candidate.name),
+    id: createCreatureId(),
     source: candidate.source ?? "manual",
     createdAt: candidate.createdAt ?? now,
     updatedAt: now,
