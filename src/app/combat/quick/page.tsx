@@ -8,7 +8,7 @@ export default async function QuickCombatPage() {
   const creatures = await listCreatures();
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto w-full max-w-7xl px-6 py-10 sm:px-8">
         <BackLink href="/" label="Back home" />
         <p className="mt-6 font-mono text-sm uppercase tracking-[0.18em] text-primary">

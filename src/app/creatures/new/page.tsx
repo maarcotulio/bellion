@@ -3,7 +3,7 @@ import { CreatureForm } from "@/components/creature/creature-form";
 
 export default function NewCreaturePage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-8">
         <BackLink href="/library" label="Back to library" />
         <h1 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">

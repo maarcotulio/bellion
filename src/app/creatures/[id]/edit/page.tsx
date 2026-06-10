@@ -21,7 +21,7 @@ export default async function EditCreaturePage({ params }: EditCreaturePageProps
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-8">
         <BackLink href={`/creatures/${creature.id}`} label="Back to creature" />
         <h1 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">

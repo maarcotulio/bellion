@@ -161,7 +161,7 @@ export default async function CreatureDetailPage({ params }: CreatureDetailPageP
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <BackLink href="/library" label="Back to library" />

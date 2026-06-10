@@ -26,7 +26,7 @@ const modules = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto flex min-h-[calc(100vh-4.5rem)] w-full max-w-6xl flex-col justify-center px-6 py-16 sm:px-8">
         <div className="max-w-3xl">
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">

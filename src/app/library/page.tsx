@@ -79,7 +79,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const creatures = await listCreatures(filters);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto w-full max-w-7xl px-6 py-10 sm:px-8">
         <BackLink href="/" label="Back home" />
         <div className="mt-4 flex flex-col gap-6 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">

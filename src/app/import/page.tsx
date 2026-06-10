@@ -151,7 +151,7 @@ export default function ImportPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-8">
         <BackLink href="/library" label="Back to library" />
         <div className="mt-4 flex flex-col gap-5 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">

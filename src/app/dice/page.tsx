@@ -3,7 +3,7 @@ import { DiceSandbox } from "@/components/combat/dice-sandbox";
 
 export default function DicePage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen arcane-page text-foreground">
       <section className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-8">
         <BackLink href="/" label="Back home" />
         <p className="mt-6 font-mono text-sm uppercase tracking-[0.18em] text-primary">
