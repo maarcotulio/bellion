@@ -118,6 +118,16 @@ export const CreatureActionSchema = z
   .object({
     name: z.string().min(1),
     description: z.string().min(1).optional(),
+    attacks: z
+      .array(
+        z
+          .object({
+            actionName: z.string().min(1),
+            count: z.number().int().positive(),
+          })
+          .strict(),
+      )
+      .optional(),
     attackBonus: ModifierSchema.optional(),
     reach: z.number().int().positive().optional(),
     range: z.string().min(1).optional(),

@@ -18,4 +18,19 @@ describe("combat UI source", () => {
     expect(quickCombat).toContain('label="Target AC"');
     expect(quickCombat).not.toContain('label="Target"');
   });
+
+  it("supports quick combat multiattacks and batch ids", () => {
+    const source = readFileSync("src/components/combat/quick-combat.tsx", "utf8");
+
+    expect(source).toContain("expandCombatActions");
+    expect(source).toContain("batchId");
+  });
+
+  it("queues encounter saves so repeated round clicks keep every local log", () => {
+    const source = readFileSync("src/components/combat/encounter-table.tsx", "utf8");
+
+    expect(source).toContain("createEncounterSaveQueue");
+    expect(source).toContain("encounterRef.current");
+    expect(source).not.toContain("<Button type=\"button\" onClick={runRound} disabled={isSaving}>");
+  });
 });

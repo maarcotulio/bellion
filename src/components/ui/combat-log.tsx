@@ -82,8 +82,24 @@ export function CombatLog({
   emptyMessage = "No rolls yet.",
   className,
 }: CombatLogProps) {
+  const latestBatchId = entries.find((entry) => entry.batchId)?.batchId;
+  const latestBatchEntries = latestBatchId
+    ? entries.filter((entry) => entry.batchId === latestBatchId)
+    : entries.slice(0, 1);
+  const latestBatchHasTargetAc = latestBatchEntries.some((entry) => entry.targetAc !== undefined);
+  const latestBatchDamageTotal = latestBatchEntries.reduce(
+    (total, entry) => total + (entry.damage?.total ?? 0),
+    0,
+  );
+
   return (
     <div className={cn("grid gap-3", className)}>
+      {latestBatchHasTargetAc ? (
+        <div className="rounded-md border border-primary/50 bg-primary/10 px-4 py-3 font-mono text-sm text-primary">
+          <span className="text-muted-foreground">Total Damage</span>{" "}
+          <span className="font-semibold text-foreground">{latestBatchDamageTotal}</span>
+        </div>
+      ) : null}
       {entries.length > 0 ? (
         entries.map((entry, index) => (
           <RollAuditCard
@@ -95,7 +111,8 @@ export function CombatLog({
             outcome={entry.outcome}
             showDamageTotal={entry.targetAc !== undefined}
             className={cn(
-              index === 0 && "animate-log-in border-primary/40",
+              (entry.batchId ? entry.batchId === latestBatchId : index === 0) &&
+                "animate-log-in border-primary/70",
             )}
           />
         ))

@@ -14,6 +14,17 @@ const actionSchema = new Schema(
   {
     name: { type: String, required: true },
     description: { type: String },
+    attacks: {
+      type: [
+        new Schema(
+          {
+            actionName: { type: String, required: true },
+            count: { type: Number, required: true },
+          },
+          { _id: false },
+        ),
+      ],
+    },
     attackBonus: { type: Number },
     reach: { type: Number },
     range: { type: String },

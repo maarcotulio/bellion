@@ -20,6 +20,7 @@ const combatantSchema = new Schema(
 const logEntrySchema = new Schema(
   {
     id: { type: String, required: true },
+    batchId: { type: String },
     createdAt: { type: String, required: true },
     attackerName: { type: String, required: true },
     targetName: { type: String, required: true },

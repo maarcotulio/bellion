@@ -38,7 +38,17 @@
   "actions": [
     {
       "name": "Multiattack",
-      "description": "The owlbear makes two attacks: one with its beak and one with its claws."
+      "description": "The owlbear makes two attacks: one with its beak and one with its claws.",
+      "attacks": [
+        {
+          "actionName": "Beak",
+          "count": 1
+        },
+        {
+          "actionName": "Claws",
+          "count": 1
+        }
+      ]
     },
     {
       "name": "Beak",

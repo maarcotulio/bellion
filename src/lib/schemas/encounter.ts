@@ -32,6 +32,7 @@ export const CombatLogDamageSchema = CombatLogRollSchema.extend({
 export const CombatLogEntrySchema = z
   .object({
     id: z.string().min(1),
+    batchId: z.string().min(1).optional(),
     createdAt: z.string().datetime({ offset: true }),
     attackerName: z.string().min(1),
     targetName: z.string().min(1),

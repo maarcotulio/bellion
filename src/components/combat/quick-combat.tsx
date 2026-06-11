@@ -20,7 +20,9 @@ type QuickCombatProps = {
 };
 
 function firstDamagingAction(creature: Creature | undefined) {
-  return creature?.actions.find((action) => action.attackBonus !== undefined && action.damage?.[0]);
+  return creature?.actions.find(
+    (action) => action.attacks?.[0] || (action.attackBonus !== undefined && action.damage?.[0]),
+  );
 }
 
 function findAction(creature: Creature | undefined, actionName: string) {
@@ -29,6 +31,25 @@ function findAction(creature: Creature | undefined, actionName: string) {
 
 function getDamageDice(action: CreatureAction | undefined) {
   return action?.damage?.[0]?.dice;
+}
+
+function expandCombatActions(
+  selectedAction: CreatureAction,
+  availableActions: readonly CreatureAction[],
+) {
+  if (!selectedAction.attacks || selectedAction.attacks.length === 0) {
+    return [selectedAction];
+  }
+
+  return selectedAction.attacks.flatMap((attack) => {
+    const referencedAction = availableActions.find((candidate) => candidate.name === attack.actionName);
+
+    if (!referencedAction) {
+      return [];
+    }
+
+    return Array.from({ length: attack.count }, () => referencedAction);
+  });
 }
 
 export function QuickCombat({ creatures }: QuickCombatProps) {
@@ -59,71 +80,78 @@ export function QuickCombat({ creatures }: QuickCombatProps) {
   }
 
   function runAttack() {
-    if (!attacker || !action || action.attackBonus === undefined) {
+    if (!attacker || !action) {
       return;
     }
 
-    const attack = targetAcEnabled
-      ? resolveAttack({
-          attackBonus: action.attackBonus,
-          targetAc: parsedTargetAc(),
-          advantage,
-          disadvantage,
-        })
-      : undefined;
-    const attackRoll = attack?.roll ?? rollD20({ modifier: action.attackBonus, advantage, disadvantage });
-    const damageDice = getDamageDice(action);
-    const critical = attack?.critical ?? attackRoll.isCritical;
-    const shouldRollDamage = targetAcEnabled ? attack?.hit === true : !attackRoll.isFumble;
-    const damage =
-      shouldRollDamage && damageDice
-        ? resolveDamage({
-            dice: damageDice,
-            critical,
-            mode,
+    const batchId = `batch-${Date.now()}-${crypto.randomUUID()}`;
+    const nextEntries: CombatLogEntry[] = expandCombatActions(action, attacker.actions).flatMap((combatAction) => {
+      if (combatAction.attackBonus === undefined) {
+        return [];
+      }
+
+      const attack = targetAcEnabled
+        ? resolveAttack({
+            attackBonus: combatAction.attackBonus,
+            targetAc: parsedTargetAc(),
+            advantage,
+            disadvantage,
           })
         : undefined;
-    const outcome = targetAcEnabled
-      ? critical
-        ? "critical"
-        : attack?.hit
-          ? "hit"
-          : "miss"
-      : critical
+      const attackRoll = attack?.roll ?? rollD20({ modifier: combatAction.attackBonus, advantage, disadvantage });
+      const damageDice = getDamageDice(combatAction);
+      const critical = attack?.critical ?? attackRoll.isCritical;
+      const shouldRollDamage = targetAcEnabled ? attack?.hit === true : !attackRoll.isFumble;
+      const damage =
+        shouldRollDamage && damageDice
+          ? resolveDamage({
+              dice: damageDice,
+              critical,
+              mode,
+            })
+          : undefined;
+      const outcome: CombatLogEntry["outcome"] = critical
         ? "critical"
         : attackRoll.isFumble
           ? "fumble"
-          : "roll";
+          : targetAcEnabled
+            ? attack?.hit
+              ? "hit"
+              : "miss"
+            : "roll";
 
-    setLog((entries) => [
-      {
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-        attackerName: attacker.name,
-        targetName: "Target",
-        targetAc: targetAcEnabled ? parsedTargetAc() : undefined,
-        actionName: action.name,
-        outcome,
-        toHit: {
-          expression: "1d20",
-          rolls: [...attackRoll.rolls],
-          modifier: attackRoll.modifier,
-          total: attackRoll.total,
+      return [
+        {
+          id: crypto.randomUUID(),
+          batchId,
+          createdAt: new Date().toISOString(),
+          attackerName: attacker.name,
+          targetName: "Target",
+          targetAc: targetAcEnabled ? parsedTargetAc() : undefined,
+          actionName: combatAction.name,
+          outcome,
+          toHit: {
+            expression: "1d20",
+            rolls: [...attackRoll.rolls],
+            modifier: attackRoll.modifier,
+            total: attackRoll.total,
+          },
+          damage: damage
+            ? {
+                expression: damage.dice,
+                rolls: [...damage.rolls],
+                modifier: damage.modifier,
+                rawTotal: damage.rawTotal,
+                total: damage.total,
+                mode: damage.mode,
+                type: combatAction.damage?.[0]?.type ?? "damage",
+              }
+            : undefined,
         },
-        damage: damage
-          ? {
-              expression: damage.dice,
-              rolls: [...damage.rolls],
-              modifier: damage.modifier,
-              rawTotal: damage.rawTotal,
-              total: damage.total,
-              mode: damage.mode,
-              type: action.damage?.[0]?.type ?? "damage",
-            }
-          : undefined,
-      },
-      ...entries,
-    ]);
+      ];
+    });
+
+    setLog((entries) => [...nextEntries, ...entries]);
   }
 
   if (creatures.length === 0) {

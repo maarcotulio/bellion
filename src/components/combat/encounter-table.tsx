@@ -1,7 +1,7 @@
 "use client";
 
 import { Dices, Download, Save } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select-field";
 import { applyDamageToCombatant, runEncounterRound } from "@/lib/combat/encounter-round";
 import type { ResistanceMode } from "@/lib/dice";
+import { createEncounterSaveQueue } from "@/lib/encounters/save-queue";
 import type { Creature } from "@/lib/schemas/creature";
 import { EncounterSchema, type Combatant, type Encounter } from "@/lib/schemas/encounter";
 
@@ -50,6 +51,7 @@ function downloadEncounter(encounter: Encounter) {
 
 export function EncounterTable({ initialEncounter, creatures }: EncounterTableProps) {
   const [encounter, setEncounter] = useState(initialEncounter);
+  const encounterRef = useRef(initialEncounter);
   const [selectedIds, setSelectedIds] = useState<readonly string[]>(
     initialEncounter.combatants
       .filter((combatant) => combatant.isActive && combatant.currentHp > 0)
@@ -70,6 +72,21 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
   const [targetAc, setTargetAc] = useState("15");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const saveQueueRef = useRef<ReturnType<typeof createEncounterSaveQueue> | null>(null);
+
+  function commitEncounter(nextEncounter: Encounter) {
+    encounterRef.current = nextEncounter;
+    setEncounter(nextEncounter);
+  }
+
+  if (!saveQueueRef.current) {
+    saveQueueRef.current = createEncounterSaveQueue({
+      save: saveEncounter,
+      onSaved: commitEncounter,
+      onError: setSaveError,
+      onSavingChange: setIsSaving,
+    });
+  }
 
   function toggleCombatant(id: string, checked: boolean) {
     setSelectedIds((current) =>
@@ -104,79 +121,70 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
     return Number.isFinite(parsedValue) ? Math.max(1, Math.floor(parsedValue)) : 10;
   }
 
-  async function persist(nextEncounter: Encounter) {
-    setIsSaving(true);
-    setSaveError(null);
+  async function saveEncounter(nextEncounter: Encounter) {
+    const response = await fetch(`/api/encounters/${nextEncounter.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(nextEncounter),
+    });
+    const data: unknown = await response.json();
 
-    try {
-      const response = await fetch(`/api/encounters/${encounter.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nextEncounter),
-      });
-      const data: unknown = await response.json();
-
-      if (response.ok && isEncounterResponse(data)) {
-        setEncounter(data.encounter);
-      } else {
-        setEncounter(nextEncounter);
-        setSaveError(errorMessageFromResponse(data));
-      }
-    } catch {
-      setEncounter(nextEncounter);
-      setSaveError("Encounter updated locally but could not be saved.");
-    } finally {
-      setIsSaving(false);
+    if (!response.ok) {
+      throw new Error(errorMessageFromResponse(data));
     }
+
+    if (!isEncounterResponse(data)) {
+      throw new Error("Encounter response was invalid.");
+    }
+
+    return data.encounter;
   }
 
-  async function updateCombatant(combatantId: string, transform: (combatant: Combatant) => Combatant) {
-    if (isSaving) {
-      return;
-    }
+  function persist(nextEncounter: Encounter) {
+    commitEncounter(nextEncounter);
+    void saveQueueRef.current?.enqueue(nextEncounter);
+  }
 
+  function updateCombatant(combatantId: string, transform: (combatant: Combatant) => Combatant) {
+    const currentEncounter = encounterRef.current;
     const nextEncounter: Encounter = {
-      ...encounter,
-      combatants: encounter.combatants.map((combatant) =>
+      ...currentEncounter,
+      combatants: currentEncounter.combatants.map((combatant) =>
         combatant.id === combatantId ? transform(combatant) : combatant,
       ),
       updatedAt: new Date().toISOString(),
     };
 
-    await persist(nextEncounter);
+    persist(nextEncounter);
   }
 
-  async function healCombatant(combatantId: string) {
+  function healCombatant(combatantId: string) {
     const amount = hpInputValue(combatantId);
 
-    await updateCombatant(combatantId, (combatant) => ({
+    updateCombatant(combatantId, (combatant) => ({
       ...combatant,
       currentHp: Math.min(combatant.maxHp, combatant.currentHp + amount),
     }));
   }
 
-  async function damageCombatant(combatantId: string) {
-    await updateCombatant(combatantId, (combatant) =>
+  function damageCombatant(combatantId: string) {
+    updateCombatant(combatantId, (combatant) =>
       applyDamageToCombatant(combatant, hpInputValue(combatantId)),
     );
   }
 
-  async function addTempHp(combatantId: string) {
+  function addTempHp(combatantId: string) {
     const amount = hpInputValue(combatantId);
 
-    await updateCombatant(combatantId, (combatant) => ({
+    updateCombatant(combatantId, (combatant) => ({
       ...combatant,
       tempHp: (combatant.tempHp ?? 0) + amount,
     }));
   }
 
-  async function runRound() {
-    if (isSaving) {
-      return;
-    }
-
+  function runRound() {
     const nextEncounter = runEncounterRound({
-      encounter,
+      encounter: encounterRef.current,
       creatures,
       selectedCombatantIds: selectedIds,
       actionByCombatantId,
@@ -185,7 +193,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
       damageMode,
     });
 
-    await persist(nextEncounter);
+    persist(nextEncounter);
   }
 
   function errorMessageFromResponse(data: unknown) {
@@ -324,7 +332,7 @@ export function EncounterTable({ initialEncounter, creatures }: EncounterTablePr
             ) : null}
 
             <div className="flex flex-wrap gap-3">
-              <Button type="button" onClick={runRound} disabled={isSaving}>
+              <Button type="button" onClick={runRound}>
                 {isSaving ? <Save aria-hidden="true" /> : <Dices aria-hidden="true" />}
                 {isSaving ? "Saving" : "Run round"}
               </Button>
