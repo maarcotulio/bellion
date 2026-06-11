@@ -29,6 +29,11 @@ describe("project files", () => {
     expect(`${compose}\n${envExample}\n${mongoose}`).not.toContain("127.0.0.1:27017/bellion");
   });
 
+  it("places middleware inside src so it protects the src app router", () => {
+    expect(existsSync("src/middleware.ts")).toBe(true);
+    expect(existsSync("middleware.ts")).toBe(false);
+  });
+
   it("uses a blue gradient app background", () => {
     const globals = readFileSync("src/app/globals.css", "utf8");
 

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { authenticateAppPassword, sessionCookieName } from "@/lib/auth/session";
 
-import { middleware } from "../../middleware";
+import { middleware } from "@/middleware";
 
 const originalEnv = process.env;
 
