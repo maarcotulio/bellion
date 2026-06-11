@@ -6,10 +6,12 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CheckboxField } from "@/components/ui/checkbox-field";
 import { CombatLog } from "@/components/ui/combat-log";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { SelectField } from "@/components/ui/select-field";
 import { resolveAttack, resolveDamage, rollD20, type ResistanceMode } from "@/lib/dice";
 import type { Creature, CreatureAction } from "@/lib/schemas/creature";
@@ -194,29 +196,36 @@ export function QuickCombat({ creatures }: QuickCombatProps) {
               ))}
             </SelectField>
             <SelectField
-                label="Damage mode"
-                value={mode}
-                onChange={(value) => setMode(value as ResistanceMode)}
-              >
-                <option value="normal">Normal</option>
-                <option value="half">Half</option>
-                <option value="double">Double</option>
-                <option value="immune">Immune</option>
-              </SelectField>
+              label="Damage mode"
+              value={mode}
+              onChange={(value) => setMode(value as ResistanceMode)}
+            >
+              <option value="normal">Normal</option>
+              <option value="half">Half</option>
+              <option value="double">Double</option>
+              <option value="immune">Immune</option>
+            </SelectField>
             <div className="grid gap-2">
-              <CheckboxField
-                id="quick-target-ac-enabled"
-                label="Target AC"
-                checked={targetAcEnabled}
-                onCheckedChange={setTargetAcEnabled}
-              />
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor="quick-target-ac" className="font-mono text-muted-foreground">
+                  Target AC
+                </Label>
+                <Checkbox
+                  id="quick-target-ac-enabled"
+                  aria-label="Enable target AC"
+                  checked={targetAcEnabled}
+                  onCheckedChange={(value) => setTargetAcEnabled(value === true)}
+                />
+              </div>
               <Input
+                id="quick-target-ac"
                 type="number"
                 min={1}
                 value={targetAc}
                 onChange={(event) => setTargetAc(event.target.value)}
                 disabled={!targetAcEnabled}
                 aria-label="Target AC"
+                className="field-input"
               />
             </div>
           </div>

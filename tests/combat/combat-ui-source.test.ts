@@ -26,6 +26,15 @@ describe("combat UI source", () => {
     expect(source).toContain("batchId");
   });
 
+  it("keeps quick combat target AC input aligned with other controls", () => {
+    const source = readFileSync("src/components/combat/quick-combat.tsx", "utf8");
+
+    expect(source).toContain('htmlFor="quick-target-ac"');
+    expect(source).toContain('id="quick-target-ac"');
+    expect(source).toContain('className="field-input"');
+    expect(source).toContain('aria-label="Enable target AC"');
+  });
+
   it("queues encounter saves so repeated round clicks keep every local log", () => {
     const source = readFileSync("src/components/combat/encounter-table.tsx", "utf8");
 
