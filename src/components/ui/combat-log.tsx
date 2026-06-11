@@ -1,6 +1,7 @@
 "use client";
 
 import { formatRollExpression } from "@/lib/dice";
+import { getLatestCombatLogBatch } from "@/lib/combat/log-presentation";
 import type { CombatLogEntry } from "@/lib/schemas/encounter";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +35,7 @@ export function RollAuditCard({
   return (
     <article
       className={cn(
-        "rounded-md border border-border/70 bg-neutral-800/80 p-3 font-mono text-sm text-neutral-200 shadow-[0_0_24px_rgba(0,0,0,0.18)]",
+        "rounded-md border-2 border-transparent bg-neutral-800/80 p-3 font-mono text-sm text-neutral-200 shadow-[0_0_24px_rgba(0,0,0,0.18)]",
         className,
       )}
     >
@@ -82,26 +83,18 @@ export function CombatLog({
   emptyMessage = "No rolls yet.",
   className,
 }: CombatLogProps) {
-  const latestBatchId = entries.find((entry) => entry.batchId)?.batchId;
-  const latestBatchEntries = latestBatchId
-    ? entries.filter((entry) => entry.batchId === latestBatchId)
-    : entries.slice(0, 1);
-  const latestBatchHasTargetAc = latestBatchEntries.some((entry) => entry.targetAc !== undefined);
-  const latestBatchDamageTotal = latestBatchEntries.reduce(
-    (total, entry) => total + (entry.damage?.total ?? 0),
-    0,
-  );
+  const latestBatch = getLatestCombatLogBatch(entries);
 
   return (
     <div className={cn("grid gap-3", className)}>
-      {latestBatchHasTargetAc ? (
+      {latestBatch.hasTargetAc ? (
         <div className="rounded-md border border-primary/50 bg-primary/10 px-4 py-3 font-mono text-sm text-primary">
           <span className="text-muted-foreground">Total Damage</span>{" "}
-          <span className="font-semibold text-foreground">{latestBatchDamageTotal}</span>
+          <span className="font-semibold text-foreground">{latestBatch.damageTotal}</span>
         </div>
       ) : null}
       {entries.length > 0 ? (
-        entries.map((entry, index) => (
+        entries.map((entry) => (
           <RollAuditCard
             key={entry.id}
             title={`${entry.attackerName} -> ${entry.targetName}`}
@@ -111,8 +104,8 @@ export function CombatLog({
             outcome={entry.outcome}
             showDamageTotal={entry.targetAc !== undefined}
             className={cn(
-              (entry.batchId ? entry.batchId === latestBatchId : index === 0) &&
-                "animate-log-in border-primary/70",
+              latestBatch.highlightedEntryIds.has(entry.id) &&
+                "animate-log-in border-[#3ed0ff] bg-primary/10",
             )}
           />
         ))

@@ -21,15 +21,19 @@ describe("combat log source", () => {
   it("highlights every entry from the latest batch and renders total damage", () => {
     const source = readFileSync("src/components/ui/combat-log.tsx", "utf8");
 
-    expect(source).toContain("latestBatchId");
+    expect(source).toContain("getLatestCombatLogBatch");
     expect(source).toContain("Total Damage");
-    expect(source).toContain("latestBatchDamageTotal");
+    expect(source).toContain("latestBatch.damageTotal");
   });
 
   it("uses a blue border without a blue glow for the latest batch", () => {
     const source = readFileSync("src/components/ui/combat-log.tsx", "utf8");
 
-    expect(source).toContain("border-primary/70");
+    expect(source).toContain("border-2 border-transparent");
+    expect(source).toContain("border-[#3ed0ff]");
+    expect(source).toContain("bg-primary/10");
+    expect(source).not.toContain("border-border/60");
+    expect(source).not.toContain("border-primary/70");
     expect(source).not.toContain("rgba(62,208,255");
   });
 });
