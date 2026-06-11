@@ -1,5 +1,9 @@
-import { BookOpen, Dices, Home, Swords } from "lucide-react";
+import { BookOpen, Dices, Home, LogOut, Swords } from "lucide-react";
+import { cookies } from "next/headers";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import { sessionCookieName, verifySessionToken } from "@/lib/auth/session";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
@@ -8,7 +12,10 @@ const navItems = [
   { href: "/combat", label: "Combat", icon: Swords },
 ] as const;
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const cookieStore = await cookies();
+  const isAuthenticated = await verifySessionToken(cookieStore.get(sessionCookieName)?.value);
+
   return (
     <header className="border-b border-border/80 bg-card/40 backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4 sm:px-8">
@@ -26,6 +33,14 @@ export function SiteHeader() {
               <span className="hidden sm:inline">{item.label}</span>
             </Link>
           ))}
+          {isAuthenticated ? (
+            <form action="/logout" method="post">
+              <Button variant="ghost" size="sm" type="submit">
+                <LogOut aria-hidden="true" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
+            </form>
+          ) : null}
         </nav>
       </div>
     </header>

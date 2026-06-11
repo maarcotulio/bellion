@@ -49,10 +49,36 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Variable | Description |
 |----------|-------------|
+| `APP_PASSWORD` | Shared password required to access the app. |
+| `SESSION_SECRET` | Long random secret used to sign the 30-day session cookie. Rotate it when revoking all active sessions. |
 | `MONGODB_URI` | MongoDB connection string. Local default: `mongodb://royal_bellion:royal_bellion@127.0.0.1:27017/royal_bellion?authSource=admin` |
 | `MONGODB_DB` | Database name. Local default: `royal_bellion` |
 
 See [`.env.example`](.env.example) for defaults.
+
+Generate a session secret with:
+
+```bash
+openssl rand -base64 48
+```
+
+Royal Bellion uses one shared app password. Everyone with the password can view, create,
+edit, delete, import, and export data. To revoke access, change `APP_PASSWORD` and
+`SESSION_SECRET`, then redeploy so every browser must log in again.
+
+### Private deployment
+
+For a small group, deploy the Next.js app to Vercel and use MongoDB Atlas for the database.
+Set these environment variables in Vercel before deploying:
+
+```bash
+APP_PASSWORD=your-shared-table-password
+SESSION_SECRET=your-generated-session-secret
+MONGODB_URI=mongodb+srv://...
+MONGODB_DB=royal_bellion
+```
+
+Only share the Vercel URL with people who should have the shared password.
 
 ## Scripts
 
